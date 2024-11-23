@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isClientLoggedIn, setIsClientLoggedIn] = useState(false);
   const [clientName, setClientName] = useState("");
+  const navigate = useNavigate(); // For navigation after logout
 
   useEffect(() => {
-    // Simulating a logged-in client for demonstration purposes
+    // Check if client data exists in localStorage
     const clientData = JSON.parse(localStorage.getItem("clientData"));
-
     if (clientData) {
       setIsClientLoggedIn(true);
       setClientName(clientData.name);
     }
   }, []);
+
+  const handleLogout = () => {
+    // Clear localStorage and update state
+    localStorage.removeItem("clientData");
+    setIsClientLoggedIn(false);
+    setClientName("");
+    navigate("/"); // Redirect to the home page after logout
+  };
 
   return (
     <nav className="navbar navbar-expand-lg" style={{ backgroundColor: "#0d6efd" }}>
@@ -53,32 +61,34 @@ const Navbar = () => {
 
           <ul className="navbar-nav ms-auto">
             {isClientLoggedIn ? (
-              <li className="nav-item dropdown">
-                <Link
-                  className="nav-link dropdown-toggle text-light"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Welcome, {clientName}
-                </Link>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <Link className="dropdown-item" to="/client/profile">
-                      Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/client/login">
-                      Log Out
-                    </Link>
-                  </li>
-                </ul>
-              </li>
+              <>
+                <li className="nav-item dropdown">
+                  <Link
+                    className="nav-link dropdown-toggle text-light"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Welcome, {clientName}
+                  </Link>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <Link className="dropdown-item" to="/client/profile">
+                        Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
+                    <li>
+                      <button className="dropdown-item" onClick={handleLogout}>
+                        Log Out
+                      </button>
+                    </li>
+                  </ul>
+                </li>
+              </>
             ) : (
               <li className="nav-item">
                 <Link to="/join" className="btn btn-light">
