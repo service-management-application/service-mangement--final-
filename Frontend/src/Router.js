@@ -52,6 +52,7 @@ export default function Router() {
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           {/* <!-- Client Pages --> */}
+
           <Route path="/" element={<ClientHome />} />
           <Route path="/Join" element={<Join />} />
           <Route path="Client/Categories" element={<Categories />} />
@@ -76,6 +77,7 @@ export default function Router() {
           <Route path="Admin/AdminProfile" element={<AdminProfile />} />
 
           {/* <!-- Provider Pages --> */}
+
 
           <Route path='/RegisterProvider' element={<RegisterProvider handleToken={handleToken} />} />
           <Route path='/LoginProvider' element={<LoginProvider handleToken={handleToken} />} />
