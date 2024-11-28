@@ -1,7 +1,39 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const Login = () => {
+const LoginProvider = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    console.log("Email:", email);
+    console.log("Password:", password);
+  
+    try {
+      // Send POST request to backend
+      const response = await axios.post('http://localhost:4000/authProvider/login', {
+        email,
+        password,
+      });
+      
+  
+      if (response.status === 200) {
+        toast.success("Login successful!");
+        navigate("/"); // Redirect to the home page or dashboard
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      toast.error("Login failed. Please check your credentials and try again.");
+    }
+  };
+  
   return (
     <>
       {/* Section: Design Block */}
@@ -28,42 +60,35 @@ const Login = () => {
               <div className="col-lg-6 mb-5 mb-lg-0">
                 <div className="card">
                   <div className="card-body py-5 px-md-5">
-                    <form>
-
-
+                    <form onSubmit={handleSubmit}>
                       {/* Email input */}
                       <div className="form-outline mb-4">
                         <input
                           type="email"
-                          id="form3Example3"
                           className="form-control"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
                         />
-                        <label className="form-label" htmlFor="form3Example3">
-                          Email address
-                        </label>
+                        <label className="form-label">Email address</label>
                       </div>
 
                       {/* Password input */}
                       <div className="form-outline mb-4">
                         <input
                           type="password"
-                          id="form3Example4"
                           className="form-control"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
                         />
-                        <label className="form-label" htmlFor="form3Example4">
-                          Password
-                        </label>
+                        <label className="form-label">Password</label>
                       </div>
 
                       {/* Submit button */}
-                      <Link to="/">
-                      <button
-                        type="submit"
-                        className="btn btn-primary btn-block mb-4"
-                      >
+                      <button type="submit" className="btn btn-primary btn-block mb-4" onClick={handleSubmit}>
                         Sign in
                       </button>
-                      </Link>
                     </form>
 
                     <h6>
@@ -78,6 +103,10 @@ const Login = () => {
               </div>
             </div>
           </div>
+           {/* Toast Container for notifications */}
+                <ToastContainer
+                position='bottom-right' 
+                autoClose={8000}/>
         </div>
         {/* Jumbotron */}
       </section>
@@ -86,4 +115,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginProvider;
