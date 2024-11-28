@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginClient = () => {
   const [email, setEmail] = useState("");
@@ -13,19 +13,29 @@ const LoginClient = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Basic client-side validation
+    if (!email || !password) {
+      toast.error("Please fill in both fields.");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:4000/authClient/login", {
         email,
         password,
-      }, { withCredentials: true });
+      });
 
       if (response.status === 200) {
-        toast.success('Login successful!');
+        const { token, newClient } = response.data;
+        localStorage.setItem("jwt", token); // Save token to localStorage
+        localStorage.setItem("clientData", JSON.stringify(newClient)); // Save client data to localStorage
+        toast.success("Login successful!");
         navigate("/"); // Redirect to the home page or dashboard
       }
     } catch (error) {
       console.error("Error logging in:", error);
-      toast.error("Login failed. Please check your credentials and try again.");
+      const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
@@ -86,8 +96,9 @@ const LoginClient = () => {
 
                     <h6>
                       Don't have an account yet?
-                      <Link to="/Join" style={{ textDecoration: "none" }}>
-                        {" "}Sign up here
+                      <Link to="/join" style={{ textDecoration: "none" }}>
+                        {" "}
+                        Sign up here
                       </Link>
                     </h6>
                   </div>
@@ -97,10 +108,7 @@ const LoginClient = () => {
           </div>
 
           {/* Toast Container for notifications */}
-          <ToastContainer
-            position='bottom-right' 
-            autoClose={8000}
-          />
+          <ToastContainer position="bottom-right" autoClose={8000} />
         </div>
       </section>
     </>
