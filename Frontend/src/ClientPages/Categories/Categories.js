@@ -66,7 +66,7 @@ export default function Categories() {
                       to={`/client/ProfilesListInCat/${category._id}`} // Pass category ID to the next page
                       className="btn btn-primary"
                     >
-                      List Events in {category.title} {/* Adjust button text */}
+                      learn more {/* Adjust button text */}
                     </Link>
                   </div>
                 </div>

@@ -1,11 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios"; // Make sure to install axios by running `npm install axios`
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function RegisterProvider() {
+export default function Register_Provider() {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    state: '',
+    email: '',
+    password: ''
+  });
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:4000/authProvider/register', formData);
+      toast.success('Registration successful!'); //< Success toast
+      console.log('Server response:', response.data);
+      // Redirect or clear form if needed
+    } catch (error) {
+      console.error('There was an error registering the user:', error.response.data);
+      toast.error('Registration failed. Please try again.'); // Failure toast
+    }
+  };
+
   return (
     <div>
       <section>
-        {/* Jumbotron */}
         <div
           className="d-flex justify-content-center align-items-center"
           style={{
@@ -22,27 +51,25 @@ export default function RegisterProvider() {
                   Sign up as <br />
                   <span className="text-primary">service provider</span>
                 </h1>
-                <p style={{ color: "hsl(217, 10%, 50.8%)" }}></p>
               </div>
 
               <div className="col-lg-6 mb-5 mb-lg-0">
                 <div className="card">
                   <div className="card-body py-5 px-md-5">
-                    <form>
-                      {/* 2 column grid layout with text inputs for the first and last names */}
+                    <form onSubmit={handleSubmit}>
+                      {/* Form fields */}
                       <div className="row">
                         <div className="col-md-6 mb-4">
                           <div className="form-outline">
                             <input
                               type="text"
-                              id="form3Example1"
+                              id="firstName"
                               className="form-control"
+                              value={formData.firstName}
+                              onChange={handleChange}
                               required
                             />
-                            <label
-                              className="form-label"
-                              htmlFor="form3Example1"
-                            >
+                            <label className="form-label" htmlFor="firstName">
                               First name
                             </label>
                           </div>
@@ -51,14 +78,13 @@ export default function RegisterProvider() {
                           <div className="form-outline">
                             <input
                               type="text"
-                              id="form3Example2"
+                              id="lastName"
                               className="form-control"
+                              value={formData.lastName}
+                              onChange={handleChange}
                               required
                             />
-                            <label
-                              className="form-label"
-                              htmlFor="form3Example2"
-                            >
+                            <label className="form-label" htmlFor="lastName">
                               Last name
                             </label>
                           </div>
@@ -70,14 +96,13 @@ export default function RegisterProvider() {
                           <div className="form-outline">
                             <input
                               type="text"
-                              id="form3Example3"
+                              id="phoneNumber"
                               className="form-control"
+                              value={formData.phoneNumber}
+                              onChange={handleChange}
                               required
                             />
-                            <label
-                              className="form-label"
-                              htmlFor="form3Example1"
-                            >
+                            <label className="form-label" htmlFor="phoneNumber">
                               Phone number
                             </label>
                           </div>
@@ -86,60 +111,55 @@ export default function RegisterProvider() {
                           <div className="form-outline">
                             <input
                               type="text"
-                              id="form3Example4"
+                              id="state"
                               className="form-control"
+                              value={formData.state}
+                              onChange={handleChange}
                               required
                             />
-                            <label
-                              className="form-label"
-                              htmlFor="form3Example2"
-                            >
+                            <label className="form-label" htmlFor="state">
                               State
                             </label>
                           </div>
                         </div>
                       </div>
 
-                      {/* Email input */}
                       <div className="form-outline mb-4">
                         <input
                           type="email"
-                          id="form3Example5"
+                          id="email"
                           className="form-control"
+                          value={formData.email}
+                          onChange={handleChange}
                           required
                         />
-                        <label className="form-label" htmlFor="form3Example3">
+                        <label className="form-label" htmlFor="email">
                           Email address
                         </label>
                       </div>
 
-                      {/* Password input */}
                       <div className="form-outline mb-4">
                         <input
                           type="password"
-                          id="form3Example"
+                          id="password"
                           className="form-control"
+                          value={formData.password}
+                          onChange={handleChange}
                           required
                         />
-                        <label className="form-label" htmlFor="form3Example4">
+                        <label className="form-label" htmlFor="password">
                           Password
                         </label>
                       </div>
 
-                      {/* Submit button */}
-                      <Link to="/login">
-                        <button
-                          type="submit"
-                          className="btn btn-primary btn-block mb-4"
-                        >
-                          Sign up
-                        </button>
-                      </Link>
+                      <button type="submit" className="btn btn-primary btn-block mb-4" onClick={handleChange}>
+                        Sign up
+                      </button>
                     </form>
 
                     <h6>
                       Already have an account?
-                      <Link to="/Login" style={{ textDecoration: "none" }}>
+                      <Link to="/LoginProvider" style={{ textDecoration: "none" }}>
                         {" "}
                         Log in
                       </Link>
@@ -150,8 +170,12 @@ export default function RegisterProvider() {
             </div>
           </div>
         </div>
-        {/* Jumbotron */}
       </section>
+    {/* Toast Container for notifications */}
+    <ToastContainer
+      position='bottom-right' 
+      autoClose={8000}/>
     </div>
+
   );
 }
