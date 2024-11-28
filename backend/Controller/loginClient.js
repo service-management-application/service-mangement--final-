@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-const ClientModel = require('../model/Client'); // Ensure correct path
+const ClientModel = require('../model/Client'); 
 
 // Middleware to verify the JWT token
 const verifyUser = (req, res, next) => {
