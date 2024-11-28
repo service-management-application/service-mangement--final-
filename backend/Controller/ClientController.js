@@ -1,17 +1,16 @@
 const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-const ClientModel = require('../model/Client'); 
+const ClientModel = require('../model/Client');
 
 // Middleware to verify the JWT token
 const verifyUser = (req, res, next) => {
-  const token = req.cookies.jwt;
+  const token = req.headers['authorization'];
   if (!token) {
-    return res.json({ message: 'Token error!' });
+    return res.status(401).json({ message: 'Token error!' });
   }
   jwt.verify(token, "0000", (err, decoded) => {
     if (err) {
-      return res.json({ message: 'Auth error!' });
+      return res.status(403).json({ message: 'Auth error!' });
     } else {
       req.newClient = decoded.newClient;
       next();
@@ -36,10 +35,10 @@ const registerClient = async (req, res) => {
     // Create and save new Client
     const newClient = new ClientModel({ firstName, lastName, email, password: hashedPassword });
     const token = jwt.sign({ newClient }, "0000", { expiresIn: '1d' });
-    res.cookie('jwt', token, { httpOnly: true, secure: false, maxAge: 86400000 }); // Cookie settings
     await newClient.save();
 
-    res.status(201).json({ message: 'Client registered successfully' });
+    // Return the token and success message
+    res.status(201).json({ message: 'Client registered successfully', token });
   } catch (error) {
     res.status(500).json({ message: 'Error registering Client', error });
   }
@@ -61,8 +60,9 @@ const loginClient = async (req, res) => {
     }
 
     const token = jwt.sign({ newClient: client }, "0000", { expiresIn: '1d' });
-    res.cookie('jwt', token, { httpOnly: true, secure: false, maxAge: 86400000 }); // Cookie settings
-    res.status(200).json({ Status: "Success", newClient: client });
+
+    // Return the token and client data
+    res.status(200).json({ message: "Success", token, newClient: client });
   } catch (error) {
     res.status(500).json({ message: 'Error logging in Client', error });
   }
@@ -70,7 +70,6 @@ const loginClient = async (req, res) => {
 
 // Logout Client
 const logoutClient = (req, res) => {
-  res.clearCookie('jwt');
   res.json({ message: 'logged out' });
 };
 
