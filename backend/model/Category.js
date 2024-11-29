@@ -9,6 +9,11 @@ const CategorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Client', // This tells Mongoose to use the Category model
+        required: true
+    }
 
 });
 

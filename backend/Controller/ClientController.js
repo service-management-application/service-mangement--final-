@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const ClientModel = require('../model/Client');
 
+
 // Middleware to verify the JWT token
 const verifyUser = (req, res, next) => {
   const token = req.headers['authorization'];
