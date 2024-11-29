@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios"; // Make sure to install axios by running `npm install axios`
+import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,8 +11,25 @@ export default function Register_Provider() {
     phoneNumber: '',
     state: '',
     email: '',
-    password: ''
+    password: '',
+    category: '' // Ensure this starts as an empty value
   });
+  const [categories, setCategories] = useState([]); // State to store categories
+
+  // Fetch categories from the backend on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/categories/getall'); // Adjust the endpoint if necessary
+        setCategories(response.data); // Set the categories in the state
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast.error('Failed to load categories.');
+      }
+    };
+
+    fetchCategories();
+  }, []); // Empty array ensures this runs once on mount
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -23,12 +40,21 @@ export default function Register_Provider() {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:4000/authProvider/register', formData);
-      toast.success('Registration successful!'); //< Success toast
+      toast.success('Registration successful!');
       console.log('Server response:', response.data);
-      // Redirect or clear form if needed
+      // Optionally clear the form after success
+      setFormData({
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        state: '',
+        email: '',
+        password: '',
+        category: ''
+      });
     } catch (error) {
-      console.error('There was an error registering the user:', error.response.data);
-      toast.error('Registration failed. Please try again.'); // Failure toast
+      console.error('Error registering the user:', error.response?.data || error.message);
+      toast.error('Registration failed. Please try again.');
     }
   };
 
@@ -151,8 +177,35 @@ export default function Register_Provider() {
                           Password
                         </label>
                       </div>
+                      
+                      {/* Dropdown for categories */}
+                      <div className="form-outline mb-4">
+                        <select
+                          id="category"
+                          className="form-select"
+                          value={formData.category}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="" disabled>
+                            Select a category
+                          </option>
+                          {categories.length > 0 ? (
+                            categories.map((category) => (
+                              <option key={category._id} value={category._id}>
+                                {category.title}
+                              </option>
+                            ))
+                          ) : (
+                            <option disabled>Loading categories...</option>
+                          )}
+                        </select>
+                        <label className="form-label" htmlFor="category">
+                          Category
+                        </label>
+                      </div>
 
-                      <button type="submit" className="btn btn-primary btn-block mb-4" onClick={handleChange}>
+                      <button type="submit" className="btn btn-primary btn-block mb-4">
                         Sign up
                       </button>
                     </form>
@@ -171,11 +224,9 @@ export default function Register_Provider() {
           </div>
         </div>
       </section>
-    {/* Toast Container for notifications */}
-    <ToastContainer
-      position='bottom-right' 
-      autoClose={8000}/>
+      
+      {/* Toast Container for notifications */}
+      <ToastContainer position="bottom-right" autoClose={5000} />
     </div>
-
   );
 }
