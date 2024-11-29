@@ -7,7 +7,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
+    const token = localStorage.getItem("ClientToken");
     const clientData = localStorage.getItem("clientData");
 
     if (token && clientData) {
@@ -19,7 +19,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("jwt");
+    localStorage.removeItem("ClientToken");
     localStorage.removeItem("clientData");
     setIsLoggedIn(false);
     setClientName(""); // Clear client name

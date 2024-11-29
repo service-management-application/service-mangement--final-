@@ -1,9 +1,27 @@
 const bcrypt = require('bcrypt');
-const ProviderModel = require('../model/Provider'); // Path to your Provider model
-const CategoryModel = require('../model/Category'); // Correct import for Category model
+const jwt = require('jsonwebtoken');
+const ProviderModel = require('../model/Provider');
+const CategoryModel = require('../model/Category');
 
+const SECRET_KEY = "0000"; 
 /**
- * Register a new Provider user.
+ * Middleware: Verify Provider Token
+ */
+const verifyProvider = (req, res, next) => {
+    const token = req.headers['authorization'];
+    if (!token) {
+        return res.status(401).json({ message: 'Token is missing' });
+    }
+
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid or expired token' });
+        }
+        req.newProvider = decoded.newProvider; 
+    });
+};
+/**
+ * Register a new Provider
  */
 const registerProvider = async (req, res) => {
     try {
@@ -15,21 +33,21 @@ const registerProvider = async (req, res) => {
         }
 
         // Validate category
-        const categoryExists = await CategoryModel.findById(category); // Use CategoryModel here
+        const categoryExists = await CategoryModel.findById(category);
         if (!categoryExists) {
             return res.status(400).json({ message: 'Invalid category ID' });
         }
 
-        // Check if Provider already exists
+        // Check if provider already exists
         const existingProvider = await ProviderModel.findOne({ email });
         if (existingProvider) {
-            return res.status(409).json({ message: 'Provider already exists with this email' });
+            return res.status(409).json({ message: 'Provider already exists' });
         }
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create a new Provider user
+        // Create and save new provider
         const newProvider = new ProviderModel({
             firstName,
             lastName,
@@ -39,11 +57,12 @@ const registerProvider = async (req, res) => {
             password: hashedPassword,
             category,
         });
-
-        // Save to database
         await newProvider.save();
 
-        res.status(201).json({ message: 'Provider registered successfully' });
+        // Generate a token
+        const token = jwt.sign({ id: newProvider._id }, SECRET_KEY, { expiresIn: '1d' });
+
+        res.status(201).json({ message: 'Provider registered successfully', token });
     } catch (error) {
         console.error("Error during Provider registration:", error);
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -51,7 +70,7 @@ const registerProvider = async (req, res) => {
 };
 
 /**
- * Login a Provider user.
+ * Login a Provider
  */
 const loginProvider = async (req, res) => {
     const { email, password } = req.body;
@@ -62,21 +81,24 @@ const loginProvider = async (req, res) => {
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
-        // Find Provider user by email
+        // Find provider by email
         const provider = await ProviderModel.findOne({ email });
         if (!provider) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Compare the provided password with the hashed password in the database
+        // Compare passwords
         const isPasswordValid = await bcrypt.compare(password, provider.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Send success response with limited user data
+        // Generate a token
+        const token = jwt.sign({ id: provider._id }, SECRET_KEY, { expiresIn: '1d' });
+
         res.status(200).json({
             message: 'Login successful',
+            token,
             provider: {
                 id: provider._id,
                 firstName: provider.firstName,
@@ -92,4 +114,6 @@ const loginProvider = async (req, res) => {
     }
 };
 
-module.exports = { registerProvider, loginProvider };
+
+
+module.exports = { registerProvider, loginProvider, verifyProvider };

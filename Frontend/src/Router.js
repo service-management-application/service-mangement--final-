@@ -81,7 +81,7 @@ export default function Router() {
 
           <Route path='/RegisterProvider' element={<RegisterProvider handleToken={handleToken} />} />
           <Route path='/LoginProvider' element={<LoginProvider handleToken={handleToken} />} />
-          <Route path="Provider/Home" element={<ProviderHome />} />
+          <Route path="ProviderHome" element={<ProviderHome />} />
           <Route path="Provider/OfferDescription" element={<OfferDescription />} />
           <Route path="Provider/OffersListInCat" element={<OffersListInCat />} />
           <Route path="Provider/ProviderCategories" element={<ProviderCategories />} />
