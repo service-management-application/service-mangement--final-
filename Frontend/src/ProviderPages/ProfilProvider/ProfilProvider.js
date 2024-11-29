@@ -63,7 +63,7 @@ export default function ProfilProvider() {
                     className="rounded-circle mb-3"
                     style={{ width: "150px" }}
                   />
-                 
+                
                   <div className="d-flex justify-content-center">
                     <Link to="/client/ClientMessanger" className="btn btn-primary">
                       Message
@@ -82,6 +82,7 @@ export default function ProfilProvider() {
                     { label: "Email", key: "email" },
                     { label: "Phone", key: "phoneNumber" },
                     { label: "Profession", key: "category" },
+                    { label: "Description", key: "description" },
                   ].map(({ label, key }) => (
                     <div key={key}>
                       <div className="row">

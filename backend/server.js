@@ -7,7 +7,7 @@ const cors = require("cors");
 const authRoutes = require('./routes/Client'); 
 const ProviderRoutes = require('./routes/Provider');
 const categoryRoutes = require('./routes/CategoryRoutes');
-
+const serviceRoutes = require("./routes/ServiceRoutes");
 
 const cookieParser = require('cookie-parser');
 
@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use('/authClient',authRoutes); //to test : http localhost 4000/authClient
 app.use('/authProvider',ProviderRoutes);
 app.use('/categories', categoryRoutes);
-
+app.use('/services', serviceRoutes);
 
 // Connect to MongoDB
 mongoose
