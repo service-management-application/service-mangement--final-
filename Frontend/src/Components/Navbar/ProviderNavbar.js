@@ -77,7 +77,7 @@ export default function ProviderNavbar() {
                 </Link>
                 <ul className="dropdown-menu dropdown-menu-end">
                   <li>
-                    <Link className="dropdown-item" to="/provider/profile">
+                    <Link className="dropdown-item" to="/Provider/ProfilProvider">
                       Profile
                     </Link>
                   </li>
