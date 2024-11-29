@@ -32,7 +32,8 @@ const OffersListInCat = lazy(() => import("./ProviderPages/OffersListInCat/Offer
 const ProviderCategories = lazy(() => import("./ProviderPages/ProviderCategories/ProviderCategories.js"));
 const ProviderMessanger = lazy(() => import("./ProviderPages/ProviderMessanger/ProviderMessanger.js"));
 
-
+const EditProfil = lazy(() => import("./ProviderPages/ProfilProvider/EditProfil.js"));
+const ProfilProvider = lazy(() => import("./ProviderPages/ProfilProvider/ProfilProvider.js"));
 
 
 export default function Router() {
@@ -86,6 +87,9 @@ export default function Router() {
           <Route path="Provider/OffersListInCat" element={<OffersListInCat />} />
           <Route path="Provider/ProviderCategories" element={<ProviderCategories />} />
           <Route path="Provider/ProviderMessanger" element={<ProviderMessanger />} />
+          <Route path="Provider/EditProfil" element={<EditProfil />} />
+          <Route path="Provider/ProfilProvider" element={<ProfilProvider />} />
+
 
         </Routes>
       </Suspense>
