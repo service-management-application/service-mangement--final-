@@ -1,25 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ProviderNavbar() {
   const [isProviderLoggedIn, setIsProviderLoggedIn] = useState(false);
   const [providerName, setProviderName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetching provider data from localStorage
-    const providerData = JSON.parse(localStorage.getItem("providerData"));
+    const storedData = localStorage.getItem("providerData");
+    const providerData = storedData ? JSON.parse(storedData) : null;
 
     if (providerData) {
       setIsProviderLoggedIn(true);
-      setProviderName(providerData.name);
+      setProviderName(providerData.firstName || "Provider");
+    } else {
+      setIsProviderLoggedIn(false);
     }
   }, []);
+
+  // Handle log out
+  const handleLogOut = () => {
+    localStorage.removeItem("providerToken"); // Remove token
+    localStorage.removeItem("providerData"); // Remove provider data
+    setIsProviderLoggedIn(false); // Update state
+    navigate("/ProviderHome"); // Redirect to home or login page
+  };
 
   return (
     <nav className="navbar navbar-expand-lg" style={{ backgroundColor: "#0d6efd" }}>
       <div className="container-fluid">
         <Link className="navbar-brand text-light" to="/provider/providerhome">
-          SIF Agency 
+          SIF Agency
         </Link>
         <button
           className="navbar-toggler"
@@ -35,7 +47,7 @@ export default function ProviderNavbar() {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link text-light" aria-current="page" to="/provider/providerhome">
+              <Link className="nav-link text-light" aria-current="page" to="/ProviderHome">
                 Home
               </Link>
             </li>
@@ -73,9 +85,9 @@ export default function ProviderNavbar() {
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/provider/logout">
+                    <button className="dropdown-item" onClick={handleLogOut}>
                       Log Out
-                    </Link>
+                    </button>
                   </li>
                 </ul>
               </li>

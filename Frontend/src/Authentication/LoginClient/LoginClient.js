@@ -27,7 +27,7 @@ const LoginClient = () => {
 
       if (response.status === 200) {
         const { token, newClient } = response.data;
-        localStorage.setItem("jwt", token); // Save token to localStorage
+        localStorage.setItem("ClientToken", token); // Save token to localStorage
         localStorage.setItem("clientData", JSON.stringify(newClient)); // Save client data to localStorage
         toast.success("Login successful!");
         navigate("/"); // Redirect to the home page or dashboard
