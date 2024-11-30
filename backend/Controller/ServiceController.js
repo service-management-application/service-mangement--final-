@@ -4,7 +4,7 @@ const ClientModel = require('../model/Client');
 // Create a new service
 exports.createService = async (req, res) => {
   try {
-    const { Client, title, date, description } = req.body || {};
+    const { Client, title, date, description } = req.body;
 
     // Validate required fields
     if (!Client || !title || !date || !description) {
@@ -17,15 +17,20 @@ exports.createService = async (req, res) => {
       return res.status(400).json({ message: "Client not found" });
     }
 
-    // Create and save service
+    // Create and save the service
     const service = new Service({ Client, title, date, description });
     await service.save();
-    res.status(201).json({ message: "Service created successfully", service });
+
+    res.status(201).json({
+      message: "Service created successfully",
+      service,
+    });
   } catch (error) {
     console.error("Error in createService:", error);
     res.status(500).json({ message: "Failed to create service", error: error.message });
   }
 };
+
 
 // Get all services
 exports.getAllServices = async (req, res) => {

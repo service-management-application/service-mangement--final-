@@ -125,7 +125,6 @@ export default function CategoriesManagement() {
                   <table className="table table-hover table-bordered w-100">
                     <thead>
                       <tr>
-                        <th scope="col">ID</th>
                         <th scope="col">Title</th>
                         <th scope="col">Description</th>
                         <th scope="col">Actions</th>
@@ -134,7 +133,7 @@ export default function CategoriesManagement() {
                     <tbody>
                       {categories.map((category) => (
                         <tr key={category._id}> {/* Ensuring unique key */}
-                          <th scope="row">{category._id}</th>
+                          <th scope="row" hidden>{category._id} </th>
                           <td>{category.title}</td>
                           <td>{category.description}</td>
                           <td>

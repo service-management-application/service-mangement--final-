@@ -13,7 +13,7 @@ const LoginProvider = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:4000/Provider/login", {
+      const response = await axios.post("http://localhost:4000/providers/login", {
         email,
         password,
       });
