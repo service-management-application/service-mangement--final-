@@ -12,23 +12,23 @@ const LoginClient = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Basic client-side validation
     if (!email || !password) {
       toast.error("Please fill in both fields.");
       return;
     }
-
+  
     try {
-      const response = await axios.post("http://localhost:4000/authClient/login", {
+      const response = await axios.post("http://localhost:4000/clients/login", {
         email,
         password,
       });
-
+  
       if (response.status === 200) {
-        const { token, newClient } = response.data;
+        const { token, client } = response.data; // Changed from newClient to client
         localStorage.setItem("ClientToken", token); // Save token to localStorage
-        localStorage.setItem("clientData", JSON.stringify(newClient)); // Save client data to localStorage
+        localStorage.setItem("clientData", JSON.stringify(client)); // Save client data to localStorage
         toast.success("Login successful!");
         navigate("/"); // Redirect to the home page or dashboard
       }
@@ -38,6 +38,7 @@ const LoginClient = () => {
       toast.error(errorMessage);
     }
   };
+  
 
   return (
     <>

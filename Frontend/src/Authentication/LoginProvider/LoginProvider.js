@@ -13,7 +13,7 @@ const LoginProvider = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:4000/authProvider/login", {
+      const response = await axios.post("http://localhost:4000/Provider/login", {
         email,
         password,
       });
@@ -24,7 +24,7 @@ const LoginProvider = () => {
         localStorage.setItem("providerToken", token); 
         localStorage.setItem("providerData", JSON.stringify(provider)); 
         toast.success("Login successful!");
-        navigate("/ProviderHome");
+        navigate("/provider/ProviderHome");
       }
     } catch (error) {
       console.error("Error logging in:", error);

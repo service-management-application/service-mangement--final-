@@ -1,126 +1,153 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminNavbar from "../../Components/Navbar/AdminNavbar";
 import Sidebar from "../../Components/Sidebar/AdminSidebar";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 export default function ClientsManagement() {
   const [showForm, setShowForm] = useState(false);
   const [clientData, setClientData] = useState({
-    id: null,
-    image: null,
     firstname: "",
     lastname: "",
-    phone: "",
     email: "",
-    password: "", // Add password field
+    password: "",
   });
 
-  const [clients, setClients] = useState([]); // To store the list of clients
+  const [clients, setClients] = useState([]); // Fetch from backend
+  const [loading, setLoading] = useState(true); // For loading state
+  const [error, setError] = useState(null); // For error handling
 
-  // Handle form input changes
+  const API_BASE_URL = "http://localhost:4000/clients"; // Replace with actual API endpoint
+
+  // Fetch clients from backend
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/getall`);
+        setClients(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch clients.");
+        setLoading(false);
+      }
+    };
+    fetchClients();
+  }, [clients]);
+
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setClientData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setClientData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Handle image input change (you can choose to handle images as you need)
-  const handleImageChange = (e) => {
-    setClientData((prevData) => ({
-      ...prevData,
-      image: e.target.files[0],
-    }));
-  };
-
-  // Handle form submit (Add/Update)
-  const handleFormSubmit = (e) => {
+  // Handle form submit
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (clientData.id) {
-      // Update existing client
-      setClients((prevClients) =>
-        prevClients.map((client) =>
-          client.id === clientData.id ? { ...clientData } : client
-        )
-      );
-    } else {
-      // Add new client
-      setClients((prevClients) => [
-        ...prevClients,
-        { ...clientData, id: Date.now() }, // using current timestamp as ID for simplicity
-      ]);
+
+    const formData = {
+      firstName: clientData.firstname, // Update to firstName
+      lastName: clientData.lastname,   // Update to lastName
+      email: clientData.email,
+      password: clientData.password,
+    };
+    
+
+    try {
+      if (clientData._id) {
+        // Update client
+        await axios.put(`${API_BASE_URL}/update/${clientData._id}`, formData);
+        setClients((prevClients) =>
+          prevClients.map((client) =>
+            client._id === clientData._id ? { ...clientData } : client
+          )
+        );
+      } else {
+        // Create new client
+        const response = await axios.post(`${API_BASE_URL}/register`, formData);
+        setClients((prevClients) => [...prevClients, response.data]);
+      }
+
+      setShowForm(false);
+      setClientData({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+      });
+    } catch (err) {
+      setError("Failed to save client.");
     }
-    setShowForm(false); // Hide form after submission
-    setClientData({
-      id: null,
-      image: null,
-      firstname: "",
-      lastname: "",
-      phone: "",
-      email: "",
-      password: "", // Reset password field
-    }); // Clear the form
   };
 
-  // Handle update (pre-fill form with selected client's data)
+  // Handle delete
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/delete/${id}`);
+      setClients((prevClients) =>
+        prevClients.filter((client) => client._id !== id)
+      );
+    } catch (err) {
+      setError("Failed to delete client.");
+    }
+  };
+
+  // Handle update selection
   const handleUpdate = (client) => {
     setClientData(client);
     setShowForm(true);
   };
 
-  // Handle delete client
-  const handleDelete = (id) => {
-    setClients((prevClients) => prevClients.filter((client) => client.id !== id));
-  };
-
   return (
     <div>
-      <div>
-        <div className="d-flex">
-          <Sidebar />
-          <div className="main-content w-100">
-            <AdminNavbar />
+      <div className="d-flex">
+        <Sidebar />
+        <div className="main-content w-100">
+          <AdminNavbar />
+          <br />
+          <div className="container py-4">
+            <Link to="/admin/Management" className="btn btn-link">
+              Go Back
+            </Link>
             <br />
-            <div className="container py-4">
-              <Link to="/admin/Management" type="button" className="btn btn-link">
-                Go Back
-              </Link>
-              <br />
-              <br />
+            <br />
 
-              <button
-                className="btn btn-primary mb-3"
-                type="button"
-                onClick={() => setShowForm(!showForm)}
-              >
-                Add Client
-              </button>
-              <h2 className="text-center">Clients Data</h2>
-              <br />
+            <button
+              className="btn btn-primary mb-3"
+              type="button"
+              onClick={() => setShowForm(!showForm)}
+            >
+              Add Client
+            </button>
+            <h2 className="text-center">Clients Data</h2>
+            <br />
+
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p className="text-danger">{error}</p>
+            ) : (
               <div className="row mb-4">
                 <div className="table-container px-3">
                   <table className="table table-hover table-bordered w-100">
                     <thead>
                       <tr>
-                        <th scope="col">ID</th>
                         <th scope="col">First Name</th>
                         <th scope="col">Last Name</th>
-                        <th scope="col">Phone</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Password</th> {/* New Password Column */}
+                        <th scope="col">Password</th>
                         <th scope="col">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {clients.map((client) => (
-                        <tr key={client.id}>
-                          <th scope="row">{client.id}</th>
-                          <td>{client.firstname}</td>
-                          <td>{client.lastname}</td>
-                          <td>{client.phone}</td>
+                        <tr key={client._id}>
+                          <th scope="row" hidden>{client._id}</th>
+                          <td>{client.firstName}</td>{" "}
+                          {/* Update to firstName */}
+                          <td>{client.lastName}</td> {/* Update to lastName */}
                           <td>{client.email}</td>
-                          <td>{client.password}</td> {/* Display password in table */}
+                          <td>{client.password}</td>{" "}
+                          {/* Note: Storing password directly is insecure */}
                           <td>
                             <button
                               type="button"
@@ -129,11 +156,10 @@ export default function ClientsManagement() {
                             >
                               Update
                             </button>
-
                             <button
                               type="button"
                               className="btn btn-outline-danger"
-                              onClick={() => handleDelete(client.id)}
+                              onClick={() => handleDelete(client._id)}
                             >
                               Delete
                             </button>
@@ -144,78 +170,60 @@ export default function ClientsManagement() {
                   </table>
                 </div>
               </div>
+            )}
 
-              {showForm && (
-                <form onSubmit={handleFormSubmit} className="mt-4">
-                  <div className="form-group">
-                    <label>Image</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      onChange={handleImageChange}
-                    />
-                  </div>
-                  <div className="form-group mt-3">
-                    <label>First Name</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="firstname"
-                      value={clientData.firstname}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group mt-3">
-                    <label>Last Name</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="lastname"
-                      value={clientData.lastname}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group mt-3">
-                    <label>Phone</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phone"
-                      value={clientData.phone}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group mt-3">
-                    <label>Email</label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      name="email"
-                      value={clientData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group mt-3">
-                    <label>Password</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      name="password"
-                      value={clientData.password}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="btn btn-success mt-3">
-                    {clientData.id ? "Update" : "Submit"}
-                  </button>
-                </form>
-              )}
-            </div>
+            {showForm && (
+              <form onSubmit={handleFormSubmit} className="mt-4">
+                <div className="form-group mt-3">
+                  <label>First Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="firstname"
+                    value={clientData.firstName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group mt-3">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="lastname"
+                    value={clientData.lastName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group mt-3">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    name="email"
+                    value={clientData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group mt-3">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    name="password"
+                    value={clientData.password}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn btn-success mt-3">
+                  {clientData._id ? "Update" : "Submit"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>
