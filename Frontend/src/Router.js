@@ -6,6 +6,8 @@ const ClientHome = lazy(() => import("./ClientPages/Home/ClientHome.js"));
 const LoginClient = lazy(() => import('./Authentication/LoginClient/LoginClient.js'));
 
 const Join = lazy(() => import("./Authentication/Join/Join.js"));
+const Login = lazy(() => import("./Authentication/Join/Login.js"));
+
 const RegisterProvider = lazy(() =>import("./Authentication/RegisterProvider/RegisterProvider.js"));
 const Registerclient = lazy(() =>import("./Authentication/RegisterClient/RegisterClient.js"));
 const Categories = lazy(() => import("./ClientPages/Categories/Categories.js"));
@@ -52,10 +54,16 @@ export default function Router() {
     <div>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
+          {/* <!-- Commun Pages --> */}
+          <Route path="/Join" element={<Join />} />
+          <Route path="/Login" element={<Login />} />
+
+
+
+
           {/* <!-- Client Pages --> */}
 
           <Route path="/" element={<ClientHome />} />
-          <Route path="/Join" element={<Join />} />
           <Route path="Client/Categories" element={<Categories />} />
           <Route path="Client/ProfilesListInCat" element={<ProfilesListInCat />} />
           <Route path="Client/aboutus" element={<Aboutus />} />
@@ -82,13 +90,14 @@ export default function Router() {
 
           <Route path='/RegisterProvider' element={<RegisterProvider handleToken={handleToken} />} />
           <Route path='/LoginProvider' element={<LoginProvider handleToken={handleToken} />} />
-          <Route path="ProviderHome" element={<ProviderHome />} />
+          <Route path="Provider/ProviderHome" element={<ProviderHome />} />
           <Route path="Provider/OfferDescription" element={<OfferDescription />} />
           <Route path="Provider/OffersListInCat" element={<OffersListInCat />} />
           <Route path="Provider/ProviderCategories" element={<ProviderCategories />} />
           <Route path="Provider/ProviderMessanger" element={<ProviderMessanger />} />
           <Route path="Provider/EditProfil" element={<EditProfil />} />
           <Route path="Provider/ProfilProvider" element={<ProfilProvider />} />
+          <Route path="Client/aboutus" element={<Aboutus />} />
 
 
         </Routes>

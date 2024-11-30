@@ -34,7 +34,7 @@ export default function RegisterClient() {
     try {
       // Send POST request to backend
       const response = await axios.post(
-        'http://localhost:4000/authClient/register',
+        'http://localhost:4000/clients/register',
         formData,
         { withCredentials: true } // Include credentials
       );

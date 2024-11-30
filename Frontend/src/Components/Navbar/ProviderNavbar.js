@@ -24,7 +24,7 @@ export default function ProviderNavbar() {
     localStorage.removeItem("providerToken"); // Remove token
     localStorage.removeItem("providerData"); // Remove provider data
     setIsProviderLoggedIn(false); // Update state
-    navigate("/ProviderHome"); // Redirect to home or login page
+    navigate("/LoginProvider"); // Redirect to home or login page
   };
 
   return (
