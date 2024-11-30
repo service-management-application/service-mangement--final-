@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const ServiceSchema = new mongoose.Schema({
   Client: {
     type: mongoose.Schema.Types.ObjectId,// establishes a relationship between the Service and Client models.
-    ref: 'Client', // This tells Mongoose to use the Client model
+    ref: 'Users', // This tells Mongoose to use the Client model
     required: true
 },
   
