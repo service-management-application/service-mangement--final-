@@ -3,7 +3,7 @@ const router = express.Router();
 const serviceController = require("../Controller/ServiceController");
 
 // Create a new service
-router.post("/", serviceController.createService);
+router.post("/Create", serviceController.createService);
 
 // Get all services
 router.get("/getall", serviceController.getAllServices);

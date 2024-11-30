@@ -4,7 +4,7 @@ const ClientModel = require('../model/Client');
 // Create a new service
 exports.createService = async (req, res) => {
   try {
-    const { Client, title, date, description } = req.body;
+    const { Client, title, date, description } = req.body || {};
 
     // Validate required fields
     if (!Client || !title || !date || !description) {
@@ -22,7 +22,7 @@ exports.createService = async (req, res) => {
     await service.save();
     res.status(201).json({ message: "Service created successfully", service });
   } catch (error) {
-    console.error(error);
+    console.error("Error in createService:", error);
     res.status(500).json({ message: "Failed to create service", error: error.message });
   }
 };
