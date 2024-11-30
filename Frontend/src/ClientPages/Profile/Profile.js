@@ -49,15 +49,26 @@ export default function ProfilePage() {
     fetchData();
   }, []);
 
-  // Save profile changes
-  const handleSaveChanges = () => {
-    if (newAddress.trim() || newPhone.trim()) {
-      const updatedData = { ...clientData, address: newAddress, phone: newPhone };
-      setClientData(updatedData);
-      localStorage.setItem("clientData", JSON.stringify(updatedData));
-      toast.success("Profile updated successfully!");
-    }
-  };
+// Save profile changes
+const handleSaveChanges = () => {
+  if (newAddress.trim() || newPhone.trim() || clientData.firstName || clientData.lastName ) {
+    // Update the clientData state with the new fields
+    const updatedData = {
+      ...clientData,
+      firstName: clientData.firstName,  // Ensuring first name is retained
+      lastName: clientData.lastName,
+      address: newAddress,
+      phone: newPhone
+    };
+
+    // Save the updated data to localStorage
+    setClientData(updatedData); // This updates the component state
+    localStorage.setItem("clientData", JSON.stringify(updatedData));
+    
+    toast.success("Profile updated successfully!");
+  }
+};
+
 
   const toggleEditMode = () => {
     if (isEditMode) {
@@ -126,9 +137,7 @@ export default function ProfilePage() {
             <div className="col">
               <nav aria-label="breadcrumb">
                 <ol className="breadcrumb bg-light rounded-3 p-3">
-                  <li className="breadcrumb-item">
-                    <Link to="/client/ProfilesListInCat">Go Back</Link>
-                  </li>
+                  
                   <li className="breadcrumb-item active" aria-current="page">
                     Client Profile
                   </li>
