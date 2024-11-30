@@ -25,15 +25,22 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Get client data from local storage
         const data = JSON.parse(localStorage.getItem("clientData"));
         if (data) {
           setClientData(data);
           setNewAddress(data.address || "");
           setNewPhone(data.phone || "");
+          
+          // Fetch job history using the clientId from clientData
+          const clientId = data._id;
+          if (clientId) {
+            const response = await axios.get(`http://localhost:4000/services/client/${clientId}`);
+            setJobHistory(response.data || []);
+          } else {
+            console.error("Client ID is missing in local storage.");
+          }
         }
-
-        const response = await axios.get("http://localhost:4000/services/getall");
-        setJobHistory(response.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
       }

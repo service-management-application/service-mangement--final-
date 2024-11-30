@@ -16,5 +16,8 @@ router.put("/:id", serviceController.updateService);
 
 // Delete a service
 router.delete("/:id", serviceController.deleteService);
+// get service by client id
+router.get("/client/:clientId", serviceController.getServicesByClientId);
+
 
 module.exports = router;

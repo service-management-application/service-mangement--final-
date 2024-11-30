@@ -99,3 +99,28 @@ exports.deleteService = async (req, res) => {
     res.status(500).json({ message: "Failed to delete service", error: error.message });
   }
 };
+
+exports.getServicesByClientId = async (req, res) => {
+  try {
+    const clientId = req.params.clientId;
+
+    // Log the clientId to ensure it's correct
+    console.log("Client ID received:", clientId);
+
+    // Find services by the client ID
+    const services = await Service.find({ Client: clientId }).populate("Client");
+
+    // Log the services to see if any are returned
+    console.log("Services found:", services);
+
+    if (services.length === 0) {
+      return res.status(404).json({ message: "No services found for this client" });
+    }
+
+    res.status(200).json(services);  // Send back the services
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to retrieve services for client", error: error.message });
+  }
+};
+
