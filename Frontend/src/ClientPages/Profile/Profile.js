@@ -4,42 +4,106 @@ import Navbar from "../../Components/Navbar/ClientNavbar";
 import Footer from "../../Components/Footer/Footer";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 export default function ProfilePage() {
   const [clientData, setClientData] = useState(null);
   const [newAddress, setNewAddress] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [showJobForm, setShowJobForm] = useState(false);
+  const [jobRequest, setJobRequest] = useState({
+    title: "",
+    date: "",
+    description: "",
+  });
 
-  // Fetch client data from localStorage on initial render
+  const [showHistory, setShowHistory] = useState(false);
+  const [jobHistory, setJobHistory] = useState([]);
+
+  // Fetch client data and job history
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("clientData"));
-    if (data) {
-      setClientData(data);
-      setNewAddress(data.address || "");
-      setNewPhone(data.phone || "");
-    }
+    const fetchData = async () => {
+      try {
+        const data = JSON.parse(localStorage.getItem("clientData"));
+        if (data) {
+          setClientData(data);
+          setNewAddress(data.address || "");
+          setNewPhone(data.phone || "");
+        }
+
+        const response = await axios.get("http://localhost:4000/services/getall");
+        setJobHistory(response.data || []);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  // Function to update the address and phone in localStorage
+  // Save profile changes
   const handleSaveChanges = () => {
-    if (newAddress.trim() !== "" || newPhone.trim() !== "") {
+    if (newAddress.trim() || newPhone.trim()) {
       const updatedData = { ...clientData, address: newAddress, phone: newPhone };
       setClientData(updatedData);
       localStorage.setItem("clientData", JSON.stringify(updatedData));
-      setUpdateSuccess(true); // Indicating success
-      toast.success("Profile updated successfully!"); // Display success toast
+      toast.success("Profile updated successfully!");
     }
   };
 
-  // Toggle between edit and view mode
   const toggleEditMode = () => {
     if (isEditMode) {
-      // Save changes when exiting edit mode
       handleSaveChanges();
     }
     setIsEditMode(!isEditMode);
+  };
+
+  // Handle job request form changes
+  const handleJobRequestChange = (e) => {
+    const { name, value } = e.target;
+    setJobRequest((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Submit job request
+  const handleJobRequestSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const clientData = JSON.parse(localStorage.getItem("clientData"));
+  
+      if (!clientData || !clientData._id) {
+        toast.error("Client information is missing. Please log in again.");
+        return;
+      }
+  
+      const requestData = {
+        title: jobRequest.title,
+        date: jobRequest.date,
+        description: jobRequest.description,
+        Client: clientData._id, // Lier le service au client
+      };
+  
+      const response = await axios.post("http://localhost:4000/services/Create", requestData);
+  
+      if (response.status === 201) {
+        toast.success("Job request submitted successfully!");
+        setJobRequest({ title: "", date: "", description: "" });
+        setShowJobForm(false);
+        setJobHistory((prev) => [...prev, response.data.service]);
+      }
+    } catch (err) {
+      console.error("Error submitting job request:", err);
+      toast.error("Error submitting job request. Please check your input.");
+    }
+  };
+  
+
+  const toggleHistory = () => {
+    setShowHistory((prev) => !prev);
   };
 
   if (!clientData) {
@@ -59,7 +123,7 @@ export default function ProfilePage() {
                     <Link to="/client/ProfilesListInCat">Go Back</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    Provider Profile
+                    Client Profile
                   </li>
                 </ol>
               </nav>
@@ -76,11 +140,23 @@ export default function ProfilePage() {
                     className="rounded-circle mb-3"
                     style={{ width: "150px" }}
                   />
-                  <div>Discuss here</div>
-                  <div className="d-flex justify-content-center">
-                    <Link to="/client/ClientMessanger" className="btn btn-primary">
+                  <div className="d-flex justify-content-center mb-3">
+                    <Link to="/client/ClientMessanger" className="btn btn-success">
                       Messagerie
                     </Link>
+                  </div>
+                  <div className="d-flex justify-content-center mb-3">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => setShowJobForm((prev) => !prev)}
+                    >
+                      {showJobForm ? "Close Job Request Form" : "Request a Job"}
+                    </button>
+                  </div>
+                  <div className="d-flex justify-content-center mt-3">
+                    <button className="btn btn-secondary" onClick={toggleHistory}>
+                      {showHistory ? "Close History" : "Historique"}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -89,119 +165,145 @@ export default function ProfilePage() {
             <div className="col-lg-8">
               <div className="card mb-4">
                 <div className="card-body">
-                  <div className="row">
-                    <div className="col-sm-3">
-                      <p className="mb-0">First Name</p>
-                    </div>
-                    <div className="col-sm-9">
-                      {isEditMode ? (
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={clientData.firstName}
-                          onChange={(e) => setClientData({ ...clientData, firstName: e.target.value })}
-                        />
-                      ) : (
-                        <p className="text-muted mb-0">{clientData.firstName}</p>
-                      )}
-                    </div>
-                  </div>
-                  <hr />
-                  <div className="row">
-                    <div className="col-sm-3">
-                      <p className="mb-0">Last Name</p>
-                    </div>
-                    <div className="col-sm-9">
-                      {isEditMode ? (
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={clientData.lastName}
-                          onChange={(e) => setClientData({ ...clientData, lastName: e.target.value })}
-                        />
-                      ) : (
-                        <p className="text-muted mb-0">{clientData.lastName}</p>
-                      )}
-                    </div>
-                  </div>
-                  <hr />
-                  <div className="row">
-                    <div className="col-sm-3">
-                      <p className="mb-0">Email</p>
-                    </div>
-                    <div className="col-sm-9">
-                      <p className="text-muted mb-0">{clientData.email}</p>
-                    </div>
-                  </div>
-                  <hr />
-                  <div className="row">
-                    <div className="col-sm-3">
-                      <p className="mb-0">Address</p>
-                    </div>
-                    <div className="col-sm-9">
-                      {isEditMode ? (
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={newAddress}
-                          onChange={(e) => setNewAddress(e.target.value)}
-                        />
-                      ) : (
-                        <p className="text-muted mb-0">{clientData.address}</p>
-                      )}
-                    </div>
-                  </div>
-                  <hr />
-                  <div className="row">
-                    <div className="col-sm-3">
-                      <p className="mb-0">Phone</p>
-                    </div>
-                    <div className="col-sm-9">
-                      {isEditMode ? (
-                        <input
-                          type="tel"
-                          className="form-control"
-                          value={newPhone}
-                          onChange={(e) => setNewPhone(e.target.value)}
-                        />
-                      ) : (
-                        <p className="text-muted mb-0">{clientData.phone}</p>
-                      )}
-                    </div>
-                  </div>
-                  <hr />
-                </div>
-              </div>
+                  {["firstName", "lastName", "email"].map((field) => (
+                    <React.Fragment key={field}>
+                      <div className="row">
+                        <div className="col-sm-3">
+                          <p className="mb-0">{field === "firstName" ? "First Name" : field === "lastName" ? "Last Name" : "Email"}</p>
+                        </div>
+                        <div className="col-sm-9">
+                          {isEditMode && field !== "email" ? (
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={clientData[field]}
+                              onChange={(e) =>
+                                setClientData((prev) => ({ ...prev, [field]: e.target.value }))
+                              }
+                            />
+                          ) : (
+                            <p className="text-muted mb-0">{clientData[field]}</p>
+                          )}
+                        </div>
+                      </div>
+                      <hr />
+                    </React.Fragment>
+                  ))}
 
-              <div className="d-flex justify-content-end mt-3">
-                <button onClick={toggleEditMode} className="btn btn-success">
-                  {isEditMode ? "Save Changes" : "Edit Profile"}
-                </button>
-              </div>
+                  {["address", "phone"].map((field) => (
+                    <React.Fragment key={field}>
+                      <div className="row">
+                        <div className="col-sm-3">
+                          <p className="mb-0">{field === "address" ? "Address" : "Phone"}</p>
+                        </div>
+                        <div className="col-sm-9">
+                          {isEditMode ? (
+                            <input
+                              type={field === "phone" ? "tel" : "text"}
+                              className="form-control"
+                              value={field === "address" ? newAddress : newPhone}
+                              onChange={(e) =>
+                                field === "address" ? setNewAddress(e.target.value) : setNewPhone(e.target.value)
+                              }
+                            />
+                          ) : (
+                            <p className="text-muted mb-0">{clientData[field]}</p>
+                          )}
+                        </div>
+                      </div>
+                      <hr />
+                    </React.Fragment>
+                  ))}
 
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="card mb-4">
-                    <div className="card-body">
-                      <p className="mb-4">
-                        <span className="text-primary font-italic me-1">Description</span>
-                        <br />
-                        <br />
-                        {clientData.description || "This is a description of the provider."}
-                      </p>
-                    </div>
+                  <div className="d-flex justify-content-end mt-3">
+                    <button onClick={toggleEditMode} className="btn btn-warning">
+                      {isEditMode ? "Save Changes" : "Edit Profile"}
+                    </button>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
+
+          {showJobForm && (
+            <div className="row mt-4">
+              <div className="col-lg-8 offset-lg-2">
+                <div className="card">
+                  <div className="card-body">
+                    <h4 className="card-title">Request a Job</h4>
+                    <form onSubmit={handleJobRequestSubmit}>
+                      <div className="mb-3">
+                        <label htmlFor="title" className="form-label">Request Title</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="title"
+                          name="title"
+                          placeholder="Enter job title"
+                          value={jobRequest.title}
+                          onChange={handleJobRequestChange}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="date" className="form-label">Date</label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          id="date"
+                          name="date"
+                          value={jobRequest.date}
+                          onChange={handleJobRequestChange}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="description" className="form-label">Job Description</label>
+                        <textarea
+                          className="form-control"
+                          id="description"
+                          name="description"
+                          placeholder="Enter job description"
+                          rows="4"
+                          value={jobRequest.description}
+                          onChange={handleJobRequestChange}
+                        />
+                      </div>
+                      <button type="submit" className="btn btn-primary">
+                        Submit Request
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showHistory && (
+            <div className="mt-4">
+              <h4>Job History</h4>
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobHistory.map((job) => (
+                    <tr key={job.id}>
+                      <td>{job.title}</td>
+                      <td>{job.date}</td>
+                      <td>{job.description}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </section>
-
-      <ToastContainer position="bottom-right" autoClose={5000}/> {/* Add this to show the toast notifications */}
-      
       <Footer />
+      <ToastContainer />
     </div>
   );
 }
