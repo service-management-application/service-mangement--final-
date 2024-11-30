@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../Components/Navbar/ClientNavbar";
+import Navbar from "../../Components/Navbar/ProviderNavbar";
 import Footer from "../../Components/Footer/Footer";
 
 export default function ProfilProvider() {
