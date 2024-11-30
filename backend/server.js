@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/clients',ClientRoutes); //to test : http localhost 4000/
-app.use('/provider',ProviderRoutes);
+app.use('/providerS',ProviderRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/services', serviceRoutes);
 

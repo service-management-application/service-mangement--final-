@@ -134,7 +134,6 @@ export default function ClientsManagement() {
                         <th scope="col">First Name</th>
                         <th scope="col">Last Name</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Password</th>
                         <th scope="col">Actions</th>
                       </tr>
                     </thead>
@@ -146,7 +145,6 @@ export default function ClientsManagement() {
                           {/* Update to firstName */}
                           <td>{client.lastName}</td> {/* Update to lastName */}
                           <td>{client.email}</td>
-                          <td>{client.password}</td>{" "}
                           {/* Note: Storing password directly is insecure */}
                           <td>
                             <button

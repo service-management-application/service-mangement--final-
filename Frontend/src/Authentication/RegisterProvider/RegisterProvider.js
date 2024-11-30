@@ -39,7 +39,7 @@ export default function Register_Provider() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:4000/authProvider/register', formData);
+      const response = await axios.post('http://localhost:4000/providers/register', formData);
       toast.success('Registration successful!');
       console.log('Server response:', response.data);
       // Optionally clear the form after success

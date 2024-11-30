@@ -75,7 +75,7 @@ export default function ProfilePage() {
     try {
       const clientData = JSON.parse(localStorage.getItem("clientData"));
   
-      if (!clientData || !clientData._id) {
+      if (!clientData || !clientData.id) { 
         toast.error("Client information is missing. Please log in again.");
         return;
       }
@@ -84,10 +84,10 @@ export default function ProfilePage() {
         title: jobRequest.title,
         date: jobRequest.date,
         description: jobRequest.description,
-        Client: clientData._id, // Lier le service au client
+        Client: clientData.id, // Fix: Use `id` from `clientData`
       };
   
-      const response = await axios.post("http://localhost:4000/services/Create", requestData);
+      const response = await axios.post("http://localhost:4000/services/create", requestData);
   
       if (response.status === 201) {
         toast.success("Job request submitted successfully!");
@@ -100,6 +100,7 @@ export default function ProfilePage() {
       toast.error("Error submitting job request. Please check your input.");
     }
   };
+  
   
 
   const toggleHistory = () => {
