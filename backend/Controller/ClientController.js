@@ -1,6 +1,9 @@
 const Client = require("../model/Client"); // Adjust the path to your model if necessary
+const Service = require("../model/Service");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 
 const ClientController = {
   // Register a new client
@@ -180,19 +183,27 @@ const ClientController = {
     try {
       const { id } = req.params;
 
-      const deletedClient = await Client.findByIdAndDelete(id);
-
-      if (!deletedClient) {
+      // Check if the client exists
+      const client = await Client.findById(id);
+      if (!client) {
         return res.status(404).json({ message: "Client not found." });
       }
 
-      res.status(200).json({ message: "Client deleted successfully!" });
+      // Delete all services associated with the client
+      await Service.deleteMany({ Client: id });
+
+      // Delete the client
+      await Client.findByIdAndDelete(id);
+
+      res.status(200).json({ message: "Client and associated services deleted successfully!" });
     } catch (error) {
+      console.error("Error in deleteClient:", error);
       res
         .status(500)
-        .json({ message: "Internal server error.", error: error.message });
+        .json({ message: "Internal server error while deleting client.", error: error.message });
     }
   },
 };
+
 
 module.exports = ClientController;
