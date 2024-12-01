@@ -1,8 +1,33 @@
-import React from 'react';
-import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap';
-import { PersonCircle } from 'react-bootstrap-icons';
+import React, { useState, useEffect } from "react";
+import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
+import { PersonCircle } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom";
 
-export default function AdminNavbar() {
+const AdminNavbar = () => {
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminName, setAdminName] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("AdminToken");
+    const adminData = localStorage.getItem("adminData");
+
+    if (token && adminData) {
+      setIsAdminLoggedIn(true);
+      setAdminName(JSON.parse(adminData).firstName);
+    } else {
+      setIsAdminLoggedIn(false);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("AdminToken");
+    localStorage.removeItem("adminData");
+    setIsAdminLoggedIn(false);
+    setAdminName("");
+    navigate("/admin/adminlogin");
+  };
+
   return (
     <Navbar bg="primary" variant="dark" expand="lg">
       <Container>
@@ -13,21 +38,30 @@ export default function AdminNavbar() {
             <Nav.Link href="/admin/dashboard">Home</Nav.Link>
           </Nav>
           <Nav className="ms-auto">
-            <NavDropdown
-              title={
-                <>
-                  <PersonCircle size={20} className="me-2" /> Hello
-                </>
-              }
-              id="basic-nav-dropdown"
-            >
-              <NavDropdown.Item href="/admin/adminprofile">Profile</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="/admin/adminlogin">Log Out</NavDropdown.Item>
-            </NavDropdown>
+            {isAdminLoggedIn ? (
+              <NavDropdown
+                title={
+                  <>
+                    <PersonCircle size={20} className="me-2" />
+                    Welcome, {adminName}
+                  </>
+                }
+                id="admin-nav-dropdown"
+              >
+                <NavDropdown.Item href="/admin/adminprofile">Profile</NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={handleLogout}>Log Out</NavDropdown.Item>
+              </NavDropdown>
+            ) : (
+              <Nav.Link href="/admin/adminlogin" className="btn btn-light">
+                Login
+              </Nav.Link>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
   );
-}
+};
+
+export default AdminNavbar;

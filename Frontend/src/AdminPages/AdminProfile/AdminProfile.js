@@ -1,11 +1,61 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AdminNavbar from "../../Components/Navbar/AdminNavbar";
 import Sidebar from "../../Components/Sidebar/AdminSidebar";
 import { Link } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AdminProfile() {
+  const [adminData, setAdminData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+  const [isEditable, setIsEditable] = useState(false);
+
+  useEffect(() => {
+    const storedAdminData = localStorage.getItem("adminData");
+    if (storedAdminData) {
+      setAdminData(JSON.parse(storedAdminData));
+    }
+  }, []);
+
+  const handleEditClick = () => {
+    if (isEditable) {
+      // Save changes to localStorage
+      localStorage.setItem("adminData", JSON.stringify(adminData));
+
+      // Show success toast
+      toast.success("Profile updated successfully!", {
+        position: "top-center",
+        autoClose: 2000, // Auto close after 2 seconds
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
+
+      // Refresh the page after a short delay to apply changes
+      setTimeout(() => {
+        window.location.reload();
+      }, 2100); // Slightly longer than the toast duration
+    }
+    setIsEditable(!isEditable);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setAdminData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   return (
     <div>
+      {/* Toast Container */}
+      <ToastContainer />
       <div className="d-flex">
         <Sidebar />
         <div className="main-content w-100">
@@ -13,9 +63,8 @@ export default function AdminProfile() {
           <Link to="/admin/Management" type="button" className="btn btn-link mt-3">
             Go Back
           </Link>
-
-
-            <div className="container rounded bg-white mt-5 mb-5">
+          <div className="d-flex justify-content-center align-items-center mt-5">
+            <div className="container rounded bg-white">
               <div className="row">
                 <div className="col-md-3 border-right">
                   <div className="d-flex flex-column align-items-center text-center p-3 py-5">
@@ -25,11 +74,11 @@ export default function AdminProfile() {
                       src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
                       alt="Profile"
                     />
-                    <span className="font-weight-bold">Edogaru</span>
-                    <span className="text-black-50">edogaru@mail.com.my</span>
+                    <span className="font-weight-bold">{adminData.firstName}</span>
+                    <span className="text-black-50">{adminData.email}</span>
                   </div>
                 </div>
-                <div className="col-md-5 border-right">
+                <div className="col-md-6 border-right">
                   <div className="p-3 py-5">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <h4 className="text-right">Profile Settings</h4>
@@ -37,66 +86,71 @@ export default function AdminProfile() {
                     <div className="row mt-2">
                       <div className="col-md-6">
                         <label className="labels">First Name</label>
-                        <input type="text" className="form-control" placeholder="first name" defaultValue="" />
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="First name"
+                          name="firstName"
+                          value={adminData.firstName}
+                          onChange={handleInputChange}
+                          disabled={!isEditable}
+                        />
                       </div>
                       <div className="col-md-6">
                         <label className="labels">Last Name</label>
-                        <input type="text" className="form-control" placeholder="Last name" defaultValue="" />
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Last name"
+                          name="lastName"
+                          value={adminData.lastName}
+                          onChange={handleInputChange}
+                          disabled={!isEditable}
+                        />
                       </div>
                     </div>
                     <div className="row mt-3">
                       <div className="col-md-12">
-                        <label className="labels">Mobile Number</label>
-                        <input type="text" className="form-control" placeholder="enter phone number" defaultValue="" />
+                        <label className="labels">Email</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          placeholder="Enter email"
+                          name="email"
+                          value={adminData.email}
+                          onChange={handleInputChange}
+                          disabled={!isEditable}
+                        />
                       </div>
-
-
-
                       <div className="col-md-12">
-                        <label className="labels">Email </label>
-                        <input type="text" className="form-control" placeholder="enter email " defaultValue="" />
+                        <label className="labels">Password</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          placeholder="Enter password"
+                          name="password"
+                          value={adminData.password}
+                          onChange={handleInputChange}
+                          disabled={!isEditable}
+                        />
                       </div>
-
-                      <div className="col-md-12">
-                        <label className="labels">Password </label>
-                        <input type="password" className="form-control" placeholder="enter password " defaultValue="" />
-                      </div>
-
                     </div>
                     <div className="mt-5 text-center">
-                      <button className="btn btn-primary profile-button" type="button">
-                        Save Profile
+                      <button
+                        className={`btn ${isEditable ? "btn-success" : "btn-primary"}`}
+                        type="button"
+                        onClick={handleEditClick}
+                      >
+                        {isEditable ? "Save Changes" : "Edit"}
                       </button>
                     </div>
                   </div>
                 </div>
-
-                <div className="col-md-4">
-                  <div className="p-3 py-5">
-                    <div className="d-flex justify-content-between align-items-center experience">
-                      <span>Edit Experience</span>
-                      <span className="border px-3 p-1 add-experience">
-                        <i className="fa fa-plus"></i>&nbsp;Experience
-                      </span>
-                    </div>
-                    <br />
-                    <div className="col-md-12">
-                      <label className="labels">Experience in Designing</label>
-                      <input type="text" className="form-control" placeholder="experience" defaultValue="" />
-                    </div>
-                    <br />
-                    <div className="col-md-12">
-                      <label className="labels">Additional Details</label>
-                      <input type="text" className="form-control" placeholder="additional details" defaultValue="" />
-                    </div>
-                  </div>
-                </div>
-
-                
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
   );
 }

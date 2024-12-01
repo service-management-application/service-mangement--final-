@@ -8,7 +8,7 @@ const ClientRoutes = require('./routes/Client');
 const ProviderRoutes = require('./routes/Provider');
 const categoryRoutes = require('./routes/CategoryRoutes');
 const serviceRoutes = require("./routes/ServiceRoutes");
-
+const AdminRoutes = require('./routes/AdminRoutes');
 
 const cookieParser = require('cookie-parser');
 
@@ -23,9 +23,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/clients',ClientRoutes); //to test : http localhost 4000/
-app.use('/providerS',ProviderRoutes);
+app.use('/providers',ProviderRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/services', serviceRoutes);
+app.use('/admins', AdminRoutes);
 
 // Connect to MongoDB
 mongoose
