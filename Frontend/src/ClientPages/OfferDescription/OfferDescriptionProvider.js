@@ -9,6 +9,9 @@ export default function OfferDescription() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [reservationSuccess, setReservationSuccess] = useState(false);
+  const [reservationError, setReservationError] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false); // For button state
 
   useEffect(() => {
     const fetchProvider = async () => {
@@ -22,7 +25,7 @@ export default function OfferDescription() {
 
       try {
         const response = await axios.get(
-          `http://localhost:4000/providerS/get/${providerId}`
+          `http://localhost:4000/providers/get/${providerId}`
         );
         setProvider(response.data);
       } catch (err) {
@@ -33,12 +36,54 @@ export default function OfferDescription() {
       }
     };
 
-    // Check if the user is logged in (i.e., check for the provider token in localStorage)
+    // Check if the user is logged in (i.e., check for the client token in localStorage)
     const token = localStorage.getItem("ClientToken");
     setIsLoggedIn(!!token); // If token exists, set isLoggedIn to true
 
     fetchProvider();
   }, []);
+
+  const handleReservation = async () => {
+    if (isProcessing) return; // Prevent duplicate submissions
+    setIsProcessing(true);
+
+    const clientData = JSON.parse(localStorage.getItem("clientData"));
+    const clientId = clientData ? clientData.id : null;
+    const providerId = localStorage.getItem("selectedProviderId");
+    const activityDetails = provider ? provider.activity_description : null;
+
+    if (!clientId) {
+      setReservationError("Client not logged in.");
+      setIsProcessing(false);
+      return;
+    }
+
+    if (!activityDetails) {
+      setReservationError("Activity description is missing.");
+      setIsProcessing(false);
+      return;
+    }
+
+    try {
+      const reservationData = {
+        client: clientId,
+        provider: providerId,
+        activityDetails,
+      };
+
+      // Make the API request to create the reservation
+      await axios.post("http://localhost:4000/reservations/create", reservationData);
+
+      // Show success message
+      setReservationSuccess(true);
+      setReservationError(""); // Clear error
+    } catch (err) {
+      console.error("Error creating reservation:", err);
+      setReservationError("Failed to reserve activity.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div>
@@ -72,10 +117,10 @@ export default function OfferDescription() {
                 </div>
               </div>
               <div className="col-md-6">
-                <h1 className="display-5 fw-bolder">{provider.category.title || "Provider's Service"}</h1>
+                <h1 className="display-5 fw-bolder">{provider.category?.title || "Provider's Service"}</h1>
                 <ul className="fs-5 mb-5">
                   <li>
-                    Price: <span>{provider.price || "INBOX for the price " }</span>DT/HR
+                    Price: <span>{provider.price || "INBOX for the price"}</span> DT/HR
                   </li>
                   <li>
                     Location: <span>{provider.state || "N/A"}</span>
@@ -91,17 +136,23 @@ export default function OfferDescription() {
                     <i className="bi-cart-fill me-1"></i>
                     Contact Client
                   </Link>
-                  {/* Conditionally render the Reserve button based on login status */}
+
                   {isLoggedIn && (
-                    <Link
+                    <button
                       className="btn btn-outline-dark flex-shrink-0"
-                      to="/provider/Providermessanger"
+                      onClick={handleReservation}
+                      disabled={isProcessing}
                     >
-                      <i className="bi-cart-fill me-1"></i>
-                      Reserver
-                    </Link>
+                      {isProcessing ? "Processing..." : "Reserve"}
+                    </button>
                   )}
                 </div>
+                {reservationSuccess && (
+                  <p className="text-success">Reservation made successfully!</p>
+                )}
+                {reservationError && (
+                  <p className="text-danger">{reservationError}</p>
+                )}
               </div>
             </div>
           ) : (
