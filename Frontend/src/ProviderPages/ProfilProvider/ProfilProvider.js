@@ -79,6 +79,7 @@ export default function ProfilProvider() {
                     style={{ width: "150px" }}
                   />
                 </div>
+               
               </div>
             </div>
 
@@ -156,7 +157,62 @@ export default function ProfilProvider() {
               </div>
             </div>
           </div>
-        </div>
+
+
+
+
+{/* request service from the client */}      
+              <div className="col">
+                <div className="card">
+                  <div className="card-body">
+                    <h5>Client request</h5>
+                      <table className="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th>Client firstName</th>
+                            <th>address</th>
+                            <th>phone</th>
+                            <th>email</th>
+                            <th>service</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                              <td>Client firstName</td>
+                              <td> address</td>
+                              <td>phone</td>
+                              <td>service</td>
+                              <td>state</td>
+                              <td>
+                                <button
+                                  className="btn btn-sm btn-danger"
+                                  //onClick={handleDelete}
+                                >
+                                  Delete
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-secondary"
+                                  //onClick={handleAccept}
+                                >
+                                  accept
+                                </button>
+                                <Link
+                                  className="btn btn-sm btn-secondary"
+                                  to="/provider/Providermessanger"
+                                >
+                                  <i className="bi-cart-fill me-1"></i>
+                                  Contact
+                                </Link>
+                              </td>
+                        </tbody>
+                      </table>
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/** */}
       </section>
       <Footer />
     </div>

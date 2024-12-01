@@ -4,10 +4,10 @@ const ClientModel = require('../model/Client');
 // Create a new service
 exports.createService = async (req, res) => {
   try {
-    const { Client, title, date, description } = req.body;
+    const { Client, title, date, description ,state , price } = req.body;
 
     // Validate required fields
-    if (!Client || !title || !date || !description) {
+    if (!Client || !title || !date || !description || !state || !price ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -18,7 +18,7 @@ exports.createService = async (req, res) => {
     }
 
     // Create and save the service
-    const service = new Service({ Client, title, date, description });
+    const service = new Service({ Client, title, date, description ,state , price});
     await service.save();
 
     res.status(201).json({
@@ -60,10 +60,10 @@ exports.getServiceById = async (req, res) => {
 // Update a service
 exports.updateService = async (req, res) => {
   try {
-    const { Client, title, date, description } = req.body;
+    const { Client, title, date, description,state , price } = req.body;
 
     // Validate required fields
-    if (Client && !title && !date && !description) {
+    if (Client && !title && !date && !description && !state && !price ) {
       return res.status(400).json({ message: "At least one field must be updated" });
     }
 
@@ -78,7 +78,7 @@ exports.updateService = async (req, res) => {
     // Update the service
     const service = await Service.findByIdAndUpdate(
       req.params.id,
-      { Client, title, date, description },
+      { Client, title, date, description ,state , price },
       { new: true }
     );
     if (!service) {

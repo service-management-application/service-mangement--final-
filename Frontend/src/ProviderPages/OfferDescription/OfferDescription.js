@@ -83,13 +83,13 @@ export default function OfferDescription() {
                       <strong>Email: </strong> {service.Client.email}
                     </li>
                     <li>
+                      <strong>Price: </strong> {service.price} $ {/* Example price */}
+                    </li>
+                    <li>
+                      <strong>Location: </strong> {service.state} {/* Example location */}
+                    </li>
+                    <li>
                       <strong>Description: </strong> {service.description}
-                    </li>
-                    <li>
-                      <strong>Price: </strong> {service.price} {/* Example price */}
-                    </li>
-                    <li>
-                      <strong>Location: </strong> {service.location} {/* Example location */}
                     </li>
                   </ul>
                 </div>
@@ -103,6 +103,14 @@ export default function OfferDescription() {
                 >
                   <i className="bi-cart-fill me-1"></i>
                   Contact Client
+                </Link>
+                <div style={{ margin: "0 10px" }}></div>
+                <Link
+                      className="btn btn-outline-dark flex-shrink-0"
+                      to="/provider/Providermessanger"
+                    >
+                      <i className="bi-cart-fill me-1"></i>
+                      Reserver
                 </Link>
               </div>
             </div>
