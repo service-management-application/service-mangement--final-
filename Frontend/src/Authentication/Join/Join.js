@@ -5,7 +5,7 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 const Join = () => {
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center min-vh-100 text-center">
-      <h1 className="mb-4">Join as a client or freelancer</h1>
+      <h1 className="mb-4">Join as a client or service provider</h1>
       <Row className="justify-content-center">
         <Col xs={12} md={6} lg={4} className="mb-4">
           <Card className="border-0 shadow-lg h-100" style={{ maxWidth: "500px" }}>

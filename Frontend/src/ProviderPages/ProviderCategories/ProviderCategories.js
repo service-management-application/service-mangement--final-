@@ -14,7 +14,9 @@ export default function Categories() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/services/getall"); // Replace with the correct API endpoint
+        const response = await axios.get(
+          "http://localhost:4000/services/getall"
+        ); // Replace with the correct API endpoint
         setCategories(response.data); // Set the fetched categories (or services) to state
         setLoading(false); // Set loading to false after data is fetched
       } catch (err) {
@@ -84,9 +86,24 @@ export default function Categories() {
               >
                 <div className="card" style={{ width: "18rem" }}>
                   <div className="card-body">
-                    <h5 className="card-title">{service.title}</h5> {/* Job title */}
-                    <p className="card-text">{service.date}</p> {/* Job date */}
-                 {/*  <p className="card-text">{service.description}</p> {/* Job description  */}
+                    <h5 className="card-title">{service.title}</h5>{" "}
+                    {/* Job title */}
+                    <p className="card-text">
+                      Posted by: {service.Client.firstName}{" "}
+                      {service.Client.lastName}
+                    </p>
+                    <p className="card-text">
+                      Price offered: {service.price} $
+                    </p>
+                    <p className="card-text">
+                      Needed Before:{" "}
+                      {new Date(service.date).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </p>
+                    {/*  <p className="card-text">{service.description}</p> {/* Job description  */}
                     <button
                       className="btn btn-primary"
                       onClick={() => handleViewProfile(service._id)} // Use service._id here

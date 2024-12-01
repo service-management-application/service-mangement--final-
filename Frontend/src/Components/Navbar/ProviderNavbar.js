@@ -57,7 +57,7 @@ export default function ProviderNavbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-light" to="/aboutus">
+              <Link className="nav-link text-light" to="/provider/aboutus">
                 About us
               </Link>
             </li>
@@ -76,11 +76,6 @@ export default function ProviderNavbar() {
                   Welcome, {providerName}
                 </Link>
                 <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <Link className="dropdown-item" to="/Provider/ProfilProvider">
-                      Profile
-                    </Link>
-                  </li>
                   <li>
                     <hr className="dropdown-divider" />
                   </li>

@@ -61,13 +61,15 @@ export default function ProfilesListInCat() {
         ) : providers.length > 0 ? (
           <div className="row">
             {providers.map((provider) => (
-              <div className="col-md-4" key={provider._id}>
+              <div className="col-md-4 mt-5" key={provider._id}>
                 <div className="card">
                   <div className="card-body">
                     <h5 className="card-title">
                       {provider.firstName} {provider.lastName}
                     </h5>
                     <p className="card-text">State: {provider.state}</p>
+                    
+                    <p className="card-text">Price per hour: {provider.price}$/h</p>
                     <p className="card-text">Phone: {provider.phoneNumber}</p>
                     <button
                       onClick={() => handleViewProfile(provider._id)}
