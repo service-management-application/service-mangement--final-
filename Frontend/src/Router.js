@@ -12,6 +12,8 @@ const RegisterProvider = lazy(() =>import("./Authentication/RegisterProvider/Reg
 const Registerclient = lazy(() =>import("./Authentication/RegisterClient/RegisterClient.js"));
 const Categories = lazy(() => import("./ClientPages/Categories/Categories.js"));
 const ProfilesListInCat = lazy(() =>import("./ClientPages/ProfilesListInCat/ProfilesListInCat.js"));
+const OfferDescriptionProvider = lazy(() => import("./ClientPages/OfferDescription/OfferDescriptionProvider.js"));
+
 const Aboutus = lazy(() => import("./ClientPages/AboutUs/AboutUs.js"));
 const Profile = lazy(() => import("./ClientPages/Profile/Profile.js"));
 const MyProfile = lazy(() => import("./ClientPages/MyProfile/MyProfile.js"));
@@ -30,6 +32,7 @@ const LoginProvider = lazy(() => import('./Authentication/LoginProvider/LoginPro
 
 const ProviderHome = lazy(() => import("./ProviderPages/ProviderHome/ProviderHome.js"));
 const OfferDescription = lazy(() => import("./ProviderPages/OfferDescription/OfferDescription.js"));
+
 const OffersListInCat = lazy(() => import("./ProviderPages/OffersListInCat/OffersListInCat.js"));
 const ProviderCategories = lazy(() => import("./ProviderPages/ProviderCategories/ProviderCategories.js"));
 const ProviderMessanger = lazy(() => import("./ProviderPages/ProviderMessanger/ProviderMessanger.js"));
@@ -72,6 +75,8 @@ export default function Router() {
           <Route path="Client/MyProfile" element={<MyProfile />} />
           <Route path='/LoginClient' element={<LoginClient handleToken={handleToken} />} />
           <Route path='/RegisterClient' element={<Registerclient  handleToken={handleToken}/> } />
+          <Route path="Client/OfferDescriptionProvider" element={<OfferDescriptionProvider />} />
+
 
           {/* <!-- Admin Pages --> */}
 
