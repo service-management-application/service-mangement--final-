@@ -80,8 +80,11 @@ export default function Categories() {
                     <h5 className="card-title">{category.title}</h5> {/* Category title */}
                     <p className="card-text">{category.description}</p> {/* Category description */}
                     <Link
-                      to={`/client/ProfilesListInCat/${category._id}`} // Pass category ID to the next page
+                     // to={`/client/ProfilesListInCat/${category._id}`}
+                     to={`/client/ProfilesListInCat`} // Pass category ID to the next page
                       className="btn btn-primary"
+                      onClick={() => localStorage.setItem("selectedCategoryId", category._id)} // Stocker l'ID
+
                     >
                       Learn More
                     </Link>
