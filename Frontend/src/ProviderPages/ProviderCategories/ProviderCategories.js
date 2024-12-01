@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../Components/Navbar/ProviderNavbar";
 import Footer from "../../Components/Footer/Footer";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Categories() {
   const [categories, setCategories] = useState([]); // State to store the categories (or services)
   const [loading, setLoading] = useState(true); // State to handle loading state
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
+  const navigate = useNavigate(); // To navigate programmatically
 
   // Fetch categories (or services) from the backend
   useEffect(() => {
@@ -29,6 +30,12 @@ export default function Categories() {
   const filteredCategories = categories.filter((service) =>
     service.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Handle the click on "View Job Details"
+  const handleViewProfile = (serviceId) => {
+    localStorage.setItem("selectedServiceId", serviceId); // Store service ID in localStorage
+    navigate(`/Provider/OfferDescription`); // Navigate to OfferDescription page
+  };
 
   return (
     <div>
@@ -80,12 +87,12 @@ export default function Categories() {
                     <h5 className="card-title">{service.title}</h5> {/* Job title */}
                     <p className="card-text">{service.date}</p> {/* Job date */}
                     <p className="card-text">{service.description}</p> {/* Job description */}
-                    <Link
-                      to={`/Provider/offerslistInCat/${service._id}`} // Pass job ID to the next page
+                    <button
                       className="btn btn-primary"
+                      onClick={() => handleViewProfile(service._id)} // Use service._id here
                     >
                       View Job Details {/* Button to navigate */}
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
