@@ -1,74 +1,111 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function LoginAdmin() {
+const LoginAdmin = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Basic client-side validation
+    if (!email || !password) {
+      toast.error("Please fill in both fields.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:4000/admins/login", {
+        email,
+        password,
+      });
+
+      if (response.status === 200) {
+        const { token, admin } = response.data; // Extract admin details
+        localStorage.setItem("AdminToken", token); // Save token to localStorage
+        localStorage.setItem("adminData", JSON.stringify(admin)); // Save admin data to localStorage
+        toast.success("Login successful!");
+        navigate("/admin/dashboard"); // Redirect to the admin dashboard
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+      toast.error(errorMessage);
+    }
+  };
+
   return (
-    <div>
-      <section className="vh-100">
-        <div className="container py-5 h-100">
-          <div className="row d-flex align-items-center justify-content-center h-100">
+    <>
+      <section>
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{
+            backgroundColor: "hsl(0, 0%, 96%)",
+            minHeight: "100vh",
+            margin: 0,
+            padding: "50px 0",
+          }}
+        >
+          <div className="container">
+            <div className="row gx-lg-5 align-items-center">
             <div className="col-md-8 col-lg-7 col-xl-6">
               <img
-                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
+                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
                 className="img-fluid"
                 alt="Phone illustration"
               />
             </div>
-            <div className="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-              <form>
-                {/* Email input */}
-                <div className="form-outline mb-4">
-                  <input
-                    type="email"
-                    id="form1Example13"
-                    className="form-control form-control-lg"
-                  />
-                  <label className="form-label" htmlFor="form1Example13">
-                    Email address
-                  </label>
-                </div>
 
-                {/* Password input */}
-                <div className="form-outline mb-4">
-                  <input
-                    type="password"
-                    id="form1Example23"
-                    className="form-control form-control-lg"
-                  />
-                  <label className="form-label" htmlFor="form1Example23">
-                    Password
-                  </label>
-                </div>
+              <div className="col-lg-6 mb-5 mb-lg-0">
+                <div className="card">
+                  <div className="card-body py-5 px-md-5">
+                    <form onSubmit={handleSubmit}>
+                      {/* Email input */}
+                      <div className="form-outline mb-4">
+                        <input
+                          type="email"
+                          className="form-control"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                        <label className="form-label">Email address</label>
+                      </div>
 
-                {/* <div className="d-flex justify-content-around align-items-center mb-4">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="form1Example3"
-                      defaultChecked
-                    />
-                    <label className="form-check-label" htmlFor="form1Example3">
-                      Remember me
-                    </label>
+                      {/* Password input */}
+                      <div className="form-outline mb-4">
+                        <input
+                          type="password"
+                          className="form-control"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                        />
+                        <label className="form-label">Password</label>
+                      </div>
+
+                      {/* Submit button */}
+                      <button type="submit" className="btn btn-primary btn-block mb-4">
+                        Sign in
+                      </button>
+                    </form>
                   </div>
-                  <a href="#!">Forgot password?</a>
-                </div> */}
-
-                {/* Submit button */}
-                <Link
-                  to="/admin/Dashboard"
-                  type="submit"
-                  className="btn btn-primary btn-lg btn-block"
-                >
-                  Sign in
-                </Link>
-              </form>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Toast Container for notifications */}
+          <ToastContainer position="bottom-right" autoClose={8000} />
         </div>
       </section>
-    </div>
+    </>
   );
-}
+};
+
+export default LoginAdmin;
