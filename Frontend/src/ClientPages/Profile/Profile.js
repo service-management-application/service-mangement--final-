@@ -167,7 +167,7 @@ export default function ProfilePage() {
     if (!showHistory) {
       try {
         const response = await axios.get(
-          "http://localhost:4000/services/getall"
+          `http://localhost:4000/services/client/${clientData.id}`
         );
         if (response.status === 200) {
           setJobHistory(response.data || []);
