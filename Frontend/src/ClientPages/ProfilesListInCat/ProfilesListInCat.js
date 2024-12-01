@@ -1,194 +1,69 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams, Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar/ClientNavbar";
 import Footer from "../../Components/Footer/Footer";
-import img1 from "../../assets/images/person_1.jpg";
-import { Link } from "react-router-dom";
 
 export default function ProfilesListInCat() {
-  const [priceRange, setPriceRange] = useState(250);
+    const { categoryId } = useParams(); // Récupère l'ID de la catégorie depuis l'URL
+    const [providers, setProviders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-  const handlePriceChange = (event) => {
-    setPriceRange(event.target.value);
-  };
+    useEffect(() => {
+        const fetchProviders = async () => {
+            try {
+                const response = await axios.get(`http://localhost:4000/providerS/category/${categoryId}`);
+                setProviders(response.data); // Assuming response.data contains the list of providers
+                setLoading(false);
+            } catch (err) {
+                console.error("Error fetching providers:", err);
+                setError("Failed to load providers.");
+                setLoading(false);
+            }
+        };
 
-  return (
-    <div>
-      <Navbar />
+        fetchProviders();
+    }, [categoryId]);
 
-      <div className="container text-center">
-        <div className="row">
-          <div className="col-sm-4">
-            <table width="90%" border="1" className="mt-5 ">
-              <thead style={{ backgroundColor: "#caf0f8", height: "50px" }}>
-                <tr>
-                  <th>Filter By</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <label htmlFor="location" className="form-label">
-                      Location
-                    </label>
-                    <select
-                      id="location"
-                      className="form-select"
-                      aria-label="Location select"
-                    >
-                      <option value="">Select Location</option>
-                      <option value="nabeul">Nabeul</option>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <label htmlFor="priceRange" className="form-label">
-                      Price Range: {priceRange} DT
-                    </label>
-                    <input
-                      type="range"
-                      id="priceRange"
-                      className="form-control"
-                      min="0"
-                      max="500"
-                      step="10"
-                      value={priceRange}
-                      onChange={handlePriceChange}
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <label htmlFor="availability" className="form-label">
-                      Availability
-                    </label>
-                    <select
-                      id="availability"
-                      className="form-select"
-                      aria-label="Availability select"
-                    >
-                      <option value="">Select availability</option>
-                      <option value="available">Available</option>
-                      <option value="unavailable">Unavailable</option>
-                    </select>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+    return (
+        <div>
+            <Navbar />
+            <div className="container">
+                <h1 className="text-center my-5">Providers in this Category</h1>
 
-          {/* profiles beginning */}
-          <div className="col-sm-8">
-            <div className="container-fluid mt-5">
-              <div class="row row-cols-1 row-cols-md-2 g-4">
-                <div class="col">
-                  <div class="card" style={{ width: "18rem;" }}>
-                    <img src={img1} class="card-img-top" alt="..." />
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">
-                        Some quick example text to build on the card title and
-                        make up the bulk of the card's content.
-                      </p>
+                {loading ? (
+                    <p>Loading providers...</p>
+                ) : error ? (
+                    <p className="text-danger">{error}</p>
+                ) : providers.length > 0 ? (
+                    <div className="row">
+                        {providers.map((providerdata) => (
+                            <div className="col-md-4" key={providerdata._id}>
+                                <div className="card">
+                                    <div className="card-body">
+                                        <h5 className="card-title">
+                                            {providerdata.firstName} {providerdata.lastName}
+                                        </h5>
+                                        <p className="card-text">
+                                            State: {providerdata.state}
+                                        </p>
+                                        <p className="card-text">
+                                            Phone: {providerdata.phoneNumber}
+                                        </p>
+                                        <Link to={`/client/profile/${providerdata._id}`} className="btn btn-primary">
+                                            View Profile
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                    <ul class="list-group list-group-flush">
-                      <li class="list-group-item">An item</li>
-                      <li class="list-group-item">A second item</li>
-                      <li class="list-group-item">A third item</li>
-                    </ul>
-                    <div class="card-body">
-                      <Link to="/client/profile" className="btn btn-primary">
-                        Go to Profile
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="card" style={{ width: "18rem;" }}>
-                    <img src={img1} class="card-img-top" alt="..." />
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">
-                        Some quick example text to build on the card title and
-                        make up the bulk of the card's content.
-                      </p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                      <li class="list-group-item">An item</li>
-                      <li class="list-group-item">A second item</li>
-                      <li class="list-group-item">A third item</li>
-                    </ul>
-                    <div class="card-body">
-                      <Link to="/client/profile" className="btn btn-primary">
-                        Go to Profile
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="card" style={{ width: "18rem;" }}>
-                    <img src={img1} class="card-img-top" alt="..." />
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">
-                        Some quick example text to build on the card title and
-                        make up the bulk of the card's content.
-                      </p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                      <li class="list-group-item">An item</li>
-                      <li class="list-group-item">A second item</li>
-                      <li class="list-group-item">A third item</li>
-                    </ul>
-                    <div class="card-body">
-                      <Link to="/client/profile" className="btn btn-primary">
-                        Go to Profile
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="card" style={{ width: "18rem;" }}>
-                    <img src={img1} class="card-img-top" alt="..." />
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">
-                        Some quick example text to build on the card title and
-                        make up the bulk of the card's content.
-                      </p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                      <li class="list-group-item">An item</li>
-                      <li class="list-group-item">A second item</li>
-                      <li class="list-group-item">A third item</li>
-                    </ul>
-                    <div class="card-body">
-                      <Link to="/client/profile" className="btn btn-primary">
-                        Go to Profile
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                ) : (
+                    <p>No providers found in this category.</p>
+                )}
             </div>
-          </div>
+            <Footer />
         </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <Footer />
-    </div>
-  );
+    );
 }

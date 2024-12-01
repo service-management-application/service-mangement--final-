@@ -9,5 +9,6 @@ router.get('/getall', ProviderController.getAllProviders);     // Get all provid
 router.get('/get/:id', ProviderController.getProviderById);    // Get a provider by ID
 router.put('/update/:id', ProviderController.updateProvider);  // Update a provider by ID
 router.delete('/delete/:id', ProviderController.deleteProvider); // Delete a provider by ID
+router.get("/providers/category/:categoryId", ProviderController.getProvidersByCategory);
 
 module.exports = router;

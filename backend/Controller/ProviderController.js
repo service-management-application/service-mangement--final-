@@ -222,6 +222,32 @@ const deleteProvider = async (req, res) => {
       .json({ message: "Internal server error.", error: error.message });
   }
 };
+const getProvidersByCategory = async (req, res) => {
+  try {
+      const { categoryId } = req.params;
+      console.log("Received categoryId:", categoryId);
+
+      // Vérifier si la catégorie existe
+      const category = await CategoryModel.findById(categoryId);
+      if (!category) {
+          console.log("Category not found for ID:", categoryId);
+          return res.status(404).json({ message: "Category not found" });
+      }
+
+      // Recherche des prestataires
+      const providers = await ProviderModel.find({ category: categoryId }).populate("category", "title");
+      console.log("Found providers:", providers);
+      if (providers.length === 0) {
+          console.log("No providers found for category ID:", categoryId);
+          return res.status(404).json({ message: "No providers found in this category" });
+      }
+
+      res.status(200).json(providers);
+  } catch (error) {
+      console.error("Error fetching providers by category:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 module.exports = {
   registerProvider,
@@ -230,4 +256,5 @@ module.exports = {
   getProviderById,
   updateProvider,
   deleteProvider,
+  getProvidersByCategory
 };
