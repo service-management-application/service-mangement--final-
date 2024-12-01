@@ -21,7 +21,7 @@ export default function OfferDescription() {
 
       try {
         const response = await axios.get(
-          `http://localhost:4000/services/${serviceId}` // Correct API endpoint
+          `http://localhost:4000/services/get/${serviceId}` // Correct API endpoint
         );
         setService(response.data);
       } catch (err) {

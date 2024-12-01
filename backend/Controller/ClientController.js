@@ -9,10 +9,10 @@ const ClientController = {
   // Register a new client
   registerClient: async (req, res) => {
     try {
-      const { firstName, lastName, email, password } = req.body;
+      const { firstName, lastName, address, phone, email, password } = req.body;
 
       // Validate required fields
-      if (!firstName || !lastName || !email || !password) {
+      if (!firstName || !lastName || !address || !phone || !email || !password) {
         return res.status(400).json({ message: "All fields are required." });
       }
 
@@ -25,6 +25,8 @@ const ClientController = {
       const newClient = new Client({
         firstName,
         lastName,
+        address,
+        phone,
         email,
         password: hashedPassword,
       });
@@ -84,6 +86,8 @@ const ClientController = {
           firstName: client.firstName,
           lastName: client.lastName,
           email: client.email,
+          phone: client.phone,
+          address: client.address,
         },
       });
     } catch (error) {
@@ -126,7 +130,7 @@ const ClientController = {
   updateClient: async (req, res) => {
     try {
       const { id } = req.params;
-      const { firstName, lastName, email, password } = req.body;
+      const { firstName, lastName, address, phone, email, password } = req.body;
 
       // Find the client in the database
       const client = await Client.findById(id);
@@ -149,7 +153,7 @@ const ClientController = {
       }
 
       // Prepare updated data
-      const updatedData = { firstName, lastName, email };
+      const updatedData = { firstName, lastName, email, address , phone };
       if (hashedPassword) {
         updatedData.password = hashedPassword; // Only include password if it's new or updated
       }

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState, useEffect } from "react";
+import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 
 // Lazy loading the components
@@ -16,7 +16,6 @@ const OfferDescriptionProvider = lazy(() => import("./ClientPages/OfferDescripti
 
 const Aboutus = lazy(() => import("./ClientPages/AboutUs/AboutUs.js"));
 const Profile = lazy(() => import("./ClientPages/Profile/Profile.js"));
-const MyProfile = lazy(() => import("./ClientPages/MyProfile/MyProfile.js"));
 
 const ClientMessanger = lazy(() =>import("./ClientPages/ClientMessanger/ClientMessanger.js"));
 const Dashboard = lazy(() => import("./AdminPages/Dashboard/Dashboard.js"));
@@ -37,21 +36,10 @@ const OffersListInCat = lazy(() => import("./ProviderPages/OffersListInCat/Offer
 const ProviderCategories = lazy(() => import("./ProviderPages/ProviderCategories/ProviderCategories.js"));
 const ProviderMessanger = lazy(() => import("./ProviderPages/ProviderMessanger/ProviderMessanger.js"));
 
-const EditProfil = lazy(() => import("./ProviderPages/ProfilProvider/EditProfil.js"));
 const ProfilProvider = lazy(() => import("./ProviderPages/ProfilProvider/ProfilProvider.js"));
 
 
 export default function Router() {
-  const [token, setToken] = useState('');
-
-  const handleToken = (value) => {
-    setToken(value);
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) setToken(token);
-  }, []);
 
   return (
     <div>
@@ -72,9 +60,8 @@ export default function Router() {
           <Route path="Client/aboutus" element={<Aboutus />} />
           <Route path="Client/Profile" element={<Profile />} />
           <Route path="Client/ClientMessanger" element={<ClientMessanger />} />
-          <Route path="Client/MyProfile" element={<MyProfile />} />
-          <Route path='/LoginClient' element={<LoginClient handleToken={handleToken} />} />
-          <Route path='/RegisterClient' element={<Registerclient  handleToken={handleToken}/> } />
+          <Route path='/LoginClient' element={<LoginClient  />} />
+          <Route path='/RegisterClient' element={<Registerclient  /> } />
           <Route path="Client/OfferDescriptionProvider" element={<OfferDescriptionProvider />} />
 
 
@@ -93,14 +80,13 @@ export default function Router() {
           {/* <!-- Provider Pages --> */}
 
 
-          <Route path='/RegisterProvider' element={<RegisterProvider handleToken={handleToken} />} />
-          <Route path='/LoginProvider' element={<LoginProvider handleToken={handleToken} />} />
+          <Route path='/RegisterProvider' element={<RegisterProvider  />} />
+          <Route path='/LoginProvider' element={<LoginProvider  />} />
           <Route path="Provider/ProviderHome" element={<ProviderHome />} />
           <Route path="Provider/OfferDescription" element={<OfferDescription />} />
           <Route path="Provider/OffersListInCat" element={<OffersListInCat />} />
           <Route path="Provider/ProviderCategories" element={<ProviderCategories />} />
           <Route path="Provider/ProviderMessanger" element={<ProviderMessanger />} />
-          <Route path="Provider/EditProfil" element={<EditProfil />} />
           <Route path="Provider/ProfilProvider" element={<ProfilProvider />} />
           <Route path="Client/aboutus" element={<Aboutus />} />
 
