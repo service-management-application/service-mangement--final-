@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import ProviderNavbar from "../../Components/Navbar/ProviderNavbar";
+import ClientNavbar from "../../Components/Navbar/ClientNavbar";
 import Footer from "../../Components/Footer/Footer";
 
 export default function OfferDescription() {
@@ -37,7 +37,7 @@ export default function OfferDescription() {
 
   return (
     <div>
-      <ProviderNavbar />
+      <ClientNavbar />
 
       <section className="py-5">
         <div className="container px-4 px-lg-5 my-5">
@@ -70,14 +70,14 @@ export default function OfferDescription() {
                 <h1 className="display-5 fw-bolder">{provider.category.title || "Provider's Service"}</h1>
                 <ul className="fs-5 mb-5">
                   <li>
-                    Price: <span>${provider.price || "no price selected" }</span>
+                    Price: <span>{provider.price || "INBOX for the price " }</span>DT/HR
                   </li>
                   <li>
                     Location: <span>{provider.state || "N/A"}</span>
                   </li>
                   <li>Description:</li>
                 </ul>
-                <p className="lead">{provider.description || "No description provided."}</p>
+                <p className="lead">{provider.activity_description || "No description provided."}</p>
                 <div className="d-flex">
                   <Link
                     className="btn btn-outline-dark flex-shrink-0"

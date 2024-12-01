@@ -16,9 +16,11 @@ const registerProvider = async (req, res) => {
       email,
       password,
       category,
+      price, // Optional field
+      activity_description,
     } = req.body;
 
-    // Validate required fields
+    // Validate required fields (removed price)
     if (
       !firstName ||
       !lastName ||
@@ -26,9 +28,10 @@ const registerProvider = async (req, res) => {
       !state ||
       !email ||
       !password ||
-      !category
+      !category ||
+      !activity_description
     ) {
-      return res.status(400).json({ message: "All fields are required." });
+      return res.status(400).json({ message: "All fields except price are required." });
     }
 
     // Validate category
@@ -46,7 +49,7 @@ const registerProvider = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create and save new provider
+    // Create and save new provider with price being optional
     const newProvider = new ProviderModel({
       firstName,
       lastName,
@@ -55,6 +58,8 @@ const registerProvider = async (req, res) => {
       email,
       password: hashedPassword,
       category,
+      price: price || null, // Set price to null if not provided
+      activity_description,
     });
     await newProvider.save();
 
@@ -105,6 +110,8 @@ const loginProvider = async (req, res) => {
         state: provider.state,
         phoneNumber: provider.phoneNumber,
         category: provider.category,
+        price: provider.price,
+        activity_description: provider.activity_description,
       },
     });
   } catch (error) {
@@ -155,6 +162,8 @@ const updateProvider = async (req, res) => {
       state,
       password,
       category,
+      price, // Optional field
+      activity_description,
     } = req.body;
 
     // Find provider
@@ -182,6 +191,8 @@ const updateProvider = async (req, res) => {
       state,
       email,
       category,
+      price: price !== undefined ? price : provider.price, // Keep old price if not provided
+      activity_description,
     };
     if (hashedPassword) updatedData.password = hashedPassword;
 
@@ -222,30 +233,26 @@ const deleteProvider = async (req, res) => {
       .json({ message: "Internal server error.", error: error.message });
   }
 };
+
+// Get providers by category
 const getProvidersByCategory = async (req, res) => {
   try {
-      const { categoryId } = req.params;
-      console.log("Received categoryId:", categoryId);
+    const { categoryId } = req.params;
 
-      // Vérifier si la catégorie existe
-      const category = await CategoryModel.findById(categoryId);
-      if (!category) {
-          console.log("Category not found for ID:", categoryId);
-          return res.status(404).json({ message: "Category not found" });
-      }
+    const category = await CategoryModel.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
 
-      // Recherche des prestataires
-      const providers = await ProviderModel.find({ category: categoryId }).populate("category", "title");
-      console.log("Found providers:", providers);
-      if (providers.length === 0) {
-          console.log("No providers found for category ID:", categoryId);
-          return res.status(404).json({ message: "No providers found in this category" });
-      }
+    const providers = await ProviderModel.find({ category: categoryId }).populate("category", "title");
 
-      res.status(200).json(providers);
+    if (providers.length === 0) {
+      return res.status(404).json({ message: "No providers found in this category" });
+    }
+
+    res.status(200).json(providers);
   } catch (error) {
-      console.error("Error fetching providers by category:", error);
-      res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -256,5 +263,5 @@ module.exports = {
   getProviderById,
   updateProvider,
   deleteProvider,
-  getProvidersByCategory
+  getProvidersByCategory,
 };

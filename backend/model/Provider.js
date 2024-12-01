@@ -32,7 +32,15 @@ const prestSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category', // This tells Mongoose to use the Category model
         required: true
-    }
+    },
+    price: { 
+        type: Number, 
+        facultatif: true
+    },
+    activity_description: { 
+        type: String, 
+        required: true 
+    },
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt fields
 });
