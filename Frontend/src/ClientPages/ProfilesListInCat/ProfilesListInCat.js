@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/ClientNavbar";
 import Footer from "../../Components/Footer/Footer";
 
@@ -42,6 +42,12 @@ export default function ProfilesListInCat() {
     navigate("/client/categories");
   };
 
+  // Store providerId in localStorage and navigate to the profile page
+  const handleViewProfile = (providerId) => {
+    localStorage.setItem("selectedProviderId", providerId);
+    navigate(`/Client/OfferDescriptionProvider`);
+  };
+
   return (
     <div>
       <Navbar />
@@ -58,12 +64,17 @@ export default function ProfilesListInCat() {
               <div className="col-md-4" key={provider._id}>
                 <div className="card">
                   <div className="card-body">
-                    <h5 className="card-title">{provider.firstName} {provider.lastName}</h5>
+                    <h5 className="card-title">
+                      {provider.firstName} {provider.lastName}
+                    </h5>
                     <p className="card-text">State: {provider.state}</p>
                     <p className="card-text">Phone: {provider.phoneNumber}</p>
-                    <Link to={`/client/profile/${provider._id}`} className="btn btn-primary">
+                    <button
+                      onClick={() => handleViewProfile(provider._id)}
+                      className="btn btn-primary"
+                    >
                       View Profile
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
