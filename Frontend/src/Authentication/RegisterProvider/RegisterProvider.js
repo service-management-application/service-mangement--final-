@@ -12,9 +12,12 @@ export default function Register_Provider() {
     state: '',
     email: '',
     password: '',
-    category: '' // Ensure this starts as an empty value
+    activity_description: '',
+    price: '',
+    category: ''
   });
   const [categories, setCategories] = useState([]); // State to store categories
+  const [loading, setLoading] = useState(false); // Loading state for form submission
 
   // Fetch categories from the backend on component mount
   useEffect(() => {
@@ -38,6 +41,7 @@ export default function Register_Provider() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true to show loading state
     try {
       const response = await axios.post('http://localhost:4000/providers/register', formData);
       toast.success('Registration successful!');
@@ -50,11 +54,15 @@ export default function Register_Provider() {
         state: '',
         email: '',
         password: '',
+        activity_description: '',
+        price: '',
         category: ''
       });
     } catch (error) {
       console.error('Error registering the user:', error.response?.data || error.message);
       toast.error('Registration failed. Please try again.');
+    } finally {
+      setLoading(false); // Set loading back to false
     }
   };
 
@@ -177,7 +185,7 @@ export default function Register_Provider() {
                           Password
                         </label>
                       </div>
-                      
+
                       {/* Dropdown for categories */}
                       <div className="form-outline mb-4">
                         <select
@@ -204,17 +212,43 @@ export default function Register_Provider() {
                           Category
                         </label>
                       </div>
+                      <div className="form-outline mb-4">
+                        <input
+                          type="text"
+                          id="activity_description"
+                          className="form-control"
+                          value={formData.activity_description}
+                          onChange={handleChange}
+                          required
+                        />
+                        <label className="form-label" htmlFor="activity_description">
+                          Description
+                        </label>
+                      </div>
+                      <div className="form-outline mb-4">
+                        <input
+                          type="number"
+                          id="price"
+                          className="form-control"
+                          value={formData.price}
+                          onChange={handleChange}
+                          
+                        />
+                        <label className="form-label" htmlFor="price">
+                          Price/HR (facultatif)
+                        </label>
+                      </div>
 
-                      <button type="submit" className="btn btn-primary btn-block mb-4">
-                        Sign up
+                      {/* Submit Button */}
+                      <button type="submit" className="btn btn-primary btn-block mb-4" disabled={loading}>
+                        {loading ? 'Signing up...' : 'Sign up'}
                       </button>
                     </form>
 
                     <h6>
                       Already have an account?
                       <Link to="/LoginProvider" style={{ textDecoration: "none" }}>
-                        {" "}
-                        Log in
+                        {" "} Log in
                       </Link>
                     </h6>
                   </div>
@@ -224,7 +258,7 @@ export default function Register_Provider() {
           </div>
         </div>
       </section>
-      
+
       {/* Toast Container for notifications */}
       <ToastContainer position="bottom-right" autoClose={5000} />
     </div>
