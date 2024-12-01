@@ -116,6 +116,8 @@ export default function ProfilePage() {
         date: jobRequest.date,
         description: jobRequest.description,
         Client: clientData.id,
+        state: jobRequest.state,
+        price: jobRequest.price,
       };
 
       const response = await axios.post(
@@ -125,7 +127,7 @@ export default function ProfilePage() {
 
       if (response.status === 201) {
         toast.success("Job request submitted successfully!");
-        setJobRequest({ title: "", date: "", description: "" });
+        setJobRequest({ title: "", date: "", description: "" ,state: "" ,price:""});
         setShowJobForm(false);
         setJobHistory((prev) => [...prev, response.data.service]);
       }
@@ -375,6 +377,28 @@ export default function ProfilePage() {
                           required
                         />
                       </div>
+                      <div className="mb-3">
+                        <label className="form-label">price</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="price"
+                          value={jobRequest.price}
+                          onChange={handleJobRequestChange}
+                          required
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">state</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="state"
+                          value={jobRequest.state}
+                          onChange={handleJobRequestChange}
+                          required
+                        />
+                      </div>
                       <button type="submit" className="btn btn-primary">
                         Submit
                       </button>
@@ -398,6 +422,8 @@ export default function ProfilePage() {
                             <th>Title</th>
                             <th>Date</th>
                             <th>Description</th>
+                            <th>price</th>
+                            <th>state</th>
                             <th>Actions</th>
                           </tr>
                         </thead>
@@ -411,6 +437,8 @@ export default function ProfilePage() {
                               <td>{job.title}</td>
                               <td>{new Date(job.date).toLocaleDateString()}</td>
                               <td>{job.description}</td>
+                              <td>{job.price} $</td>
+                              <td>{job.state}</td>
                               <td>
 
                                 <button

@@ -86,7 +86,7 @@ export default function Categories() {
                   <div className="card-body">
                     <h5 className="card-title">{service.title}</h5> {/* Job title */}
                     <p className="card-text">{service.date}</p> {/* Job date */}
-                    <p className="card-text">{service.description}</p> {/* Job description */}
+                 {/*  <p className="card-text">{service.description}</p> {/* Job description  */}
                     <button
                       className="btn btn-primary"
                       onClick={() => handleViewProfile(service._id)} // Use service._id here
