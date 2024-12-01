@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar/ProviderNavbar";
 import Footer from "../../Components/Footer/Footer";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function ProfilProvider() {
   const [providerData, setProviderData] = useState(null);
@@ -23,10 +25,23 @@ export default function ProfilProvider() {
     setEditableData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     setProviderData(editableData);
     localStorage.setItem("providerData", JSON.stringify(editableData));
-    setIsEditing(false);
+
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/providers/update/${editableData.id}`,
+        editableData
+      );
+      if (response.status === 200) {
+        toast.success("Profile updated successfully!");
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      toast.error("Error updating profile. Please try again.");
+    }
   };
 
   if (!providerData) {
@@ -63,12 +78,6 @@ export default function ProfilProvider() {
                     className="rounded-circle mb-3"
                     style={{ width: "150px" }}
                   />
-                
-                  <div className="d-flex justify-content-center">
-                    <Link to="/client/ClientMessanger" className="btn btn-primary">
-                      Message
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
@@ -76,13 +85,14 @@ export default function ProfilProvider() {
             <div className="col-lg-8">
               <div className="card mb-4">
                 <div className="card-body">
-                  {[
+                  {[ 
                     { label: "First Name", key: "firstName" },
                     { label: "Last Name", key: "lastName" },
                     { label: "Email", key: "email" },
                     { label: "Phone", key: "phoneNumber" },
-                    { label: "Profession", key: "category" },
-                    { label: "Description", key: "description" },
+                    { label: "State", key: "state" },
+                    { label: "Description", key: "activity_description" },
+                    { label: "Price", key: "price" },
                   ].map(({ label, key }) => (
                     <div key={key}>
                       <div className="row">
@@ -90,7 +100,7 @@ export default function ProfilProvider() {
                           <p className="mb-0">{label}</p>
                         </div>
                         <div className="col-sm-9">
-                          {isEditing ? (
+                          {isEditing && key !== "password" ? (
                             <input
                               type="text"
                               name={key}
@@ -98,6 +108,8 @@ export default function ProfilProvider() {
                               onChange={handleInputChange}
                               className="form-control"
                             />
+                          ) : key === "password" && !isEditing ? (
+                            <p className="text-muted mb-0">*****</p>
                           ) : (
                             <p className="text-muted mb-0">{providerData[key]}</p>
                           )}
@@ -106,6 +118,29 @@ export default function ProfilProvider() {
                       <hr />
                     </div>
                   ))}
+
+                  {/* Password Field Handling */}
+                  <div className="row">
+                    <div className="col-sm-3">
+                      <p className="mb-0">Password</p>
+                    </div>
+                    <div className="col-sm-9">
+                      {isEditing ? (
+                        <input
+                          type="password"
+                          name="password"
+                          placeholder="Enter new password"
+                          value={editableData.password || ""}
+                          onChange={handleInputChange}
+                          className="form-control"
+                        />
+                      ) : (
+                        <p className="text-muted mb-0">*****</p>
+                      )}
+                    </div>
+                  </div>
+                  <hr />
+
                   <div className="d-flex justify-content-end mt-3">
                     {isEditing ? (
                       <button className="btn btn-success" onClick={handleSaveChanges}>

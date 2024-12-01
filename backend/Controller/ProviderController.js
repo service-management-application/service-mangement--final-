@@ -162,7 +162,7 @@ const updateProvider = async (req, res) => {
       state,
       password,
       category,
-      price, // Optional field
+      price,
       activity_description,
     } = req.body;
 
@@ -210,11 +210,10 @@ const updateProvider = async (req, res) => {
       provider: updatedProvider,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal server error.", error: error.message });
+    res.status(500).json({ message: "Internal server error.", error: error.message });
   }
 };
+
 
 // Delete a provider by ID
 const deleteProvider = async (req, res) => {
