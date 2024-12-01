@@ -24,7 +24,6 @@ const ClientsManagement = lazy(() =>import("./AdminPages/Clientsmanagement/Clien
 const ProvidersManagement = lazy(() =>import("./AdminPages/Providers/ProvidersManagement.js"));
 const CategoriesManagement = lazy(() =>import("./AdminPages/CategoriesManagement/CategoriesManagement.js"));
 const AdminLogin = lazy(() => import("./AdminPages/AdminLogin/AdminLogin.js"));
-const AdminProfile = lazy(() =>import("./AdminPages/AdminProfile/AdminProfile.js"));
 
 const LoginProvider = lazy(() => import('./Authentication/LoginProvider/LoginProvider.js'));
 
@@ -75,7 +74,6 @@ export default function Router() {
           />
           <Route path="Admin/CategoriesManagement" element={<CategoriesManagement />}/>
           <Route path="Admin/AdminLogin" element={<AdminLogin />} />
-          <Route path="Admin/AdminProfile" element={<AdminProfile />} />
 
           {/* <!-- Provider Pages --> */}
 
@@ -88,7 +86,7 @@ export default function Router() {
           <Route path="Provider/ProviderCategories" element={<ProviderCategories />} />
           <Route path="Provider/ProviderMessanger" element={<ProviderMessanger />} />
           <Route path="Provider/ProfilProvider" element={<ProfilProvider />} />
-          <Route path="Client/aboutus" element={<Aboutus />} />
+          <Route path="Provider/aboutus" element={<Aboutus />} />
 
 
         </Routes>

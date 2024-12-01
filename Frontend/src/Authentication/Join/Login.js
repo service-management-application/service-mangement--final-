@@ -5,10 +5,10 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 const Login = () => {
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center min-vh-100 text-center">
-      <h1 className="mb-4">Are youa client or freelancer</h1>
+      <h1 className="mb-4">Are youa client or service provider</h1>
       <Row className="justify-content-center">
-        <Col xs={12} md={6} lg={4} className="mb-4">
-          <Card className="border-0 shadow-lg h-100" style={{ Width: "500px" }}>
+        <Col xs={12} md={6} lg={4} className="mb-4" style={{width : "300px"}}>
+          <Card className="border-0 shadow-lg h-100">
             <Card.Body className="d-flex flex-column align-items-center p-4">
               <Card.Title className="text-dark mb-3" style={{ fontSize: "1.5rem", fontWeight: "600" }}>
                 I'm a client
@@ -22,8 +22,8 @@ const Login = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} md={6} lg={4} className="mb-4">
-          <Card className="border-0 shadow-lg h-100" style={{ Width: "500px" }}>
+        <Col xs={12} md={6} lg={4} className="mb-4" style={{width : "300px"}}>
+          <Card className="border-0 shadow-lg h-100" >
             <Card.Body className="d-flex flex-column align-items-center p-4">
               <Card.Title className="text-dark mb-3" style={{ fontSize: "1.5rem", fontWeight: "600" }}>
                 I'm a service provider
