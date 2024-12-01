@@ -60,25 +60,27 @@ exports.getClientReservations = async (req, res) => {
 
 // Get all reservations for a specific provider
 exports.getProviderReservations = async (req, res) => {
-  const providerId = req.params.providerId; // Assuming providerId is passed as a URL parameter
-
-  try {
-    // Check if the provider exists
-    const provider = await Provider.findById(providerId);
-    if (!provider) {
-      return res.status(404).json({ message: "Provider not found" });
+    const providerId = req.params.providerId; // Assuming providerId is passed as a URL parameter
+  
+    try {
+      // Check if the provider exists
+      const provider = await Provider.findById(providerId);
+      if (!provider) {
+        return res.status(404).json({ message: "Provider not found" });
+      }
+  
+      // Get reservations for the specific provider
+      const reservations = await Reservation.find({ provider: providerId })
+        .populate("client") // Populate client details
+        .populate("provider"); // Optionally populate provider details
+  
+      return res.status(200).json({ reservations });
+    } catch (error) {
+      console.error("Error fetching provider reservations:", error);
+      return res.status(500).json({ message: "Server error" });
     }
-
-    // Get reservations for the specific provider
-    const reservations = await Reservation.find({ Provider: providerId })
-      .populate('Client');
-    return res.status(200).json({ reservations });
-  } catch (error) {
-    console.error("Error fetching provider reservations:", error);
-    return res.status(500).json({ message: "Server error" });
-  }
-};
-
+  }; 
+  
 // Get a specific reservation by ID
 exports.getReservationById = async (req, res) => {
   const { reservationId } = req.params;

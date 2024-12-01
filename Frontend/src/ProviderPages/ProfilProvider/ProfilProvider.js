@@ -9,6 +9,7 @@ export default function ProfilProvider() {
   const [providerData, setProviderData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editableData, setEditableData] = useState({});
+  const [reservations, setReservations] = useState([]); // State to store reservations
 
   useEffect(() => {
     // Fetch provider data from local storage
@@ -17,8 +18,21 @@ export default function ProfilProvider() {
       const parsedData = JSON.parse(storedData);
       setProviderData(parsedData);
       setEditableData(parsedData); // Initialize editable data
+      fetchReservations(parsedData.id); // Fetch reservations for the provider
     }
   }, []);
+
+  const fetchReservations = async (providerId) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/reservations/provider/${providerId}`);
+      if (response.status === 200) {
+        setReservations(response.data.reservations); // Update state with fetched reservations
+      }
+    } catch (error) {
+      console.error("Error fetching reservations:", error);
+      toast.error("Error fetching reservations. Please try again.");
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,14 +93,13 @@ export default function ProfilProvider() {
                     style={{ width: "150px" }}
                   />
                 </div>
-               
               </div>
             </div>
 
             <div className="col-lg-8">
               <div className="card mb-4">
                 <div className="card-body">
-                  {[ 
+                  {[
                     { label: "First Name", key: "firstName" },
                     { label: "Last Name", key: "lastName" },
                     { label: "Email", key: "email" },
@@ -101,7 +114,7 @@ export default function ProfilProvider() {
                           <p className="mb-0">{label}</p>
                         </div>
                         <div className="col-sm-9">
-                          {isEditing && key !== "password" ? (
+                          {isEditing ? (
                             <input
                               type="text"
                               name={key}
@@ -109,8 +122,6 @@ export default function ProfilProvider() {
                               onChange={handleInputChange}
                               className="form-control"
                             />
-                          ) : key === "password" && !isEditing ? (
-                            <p className="text-muted mb-0">*****</p>
                           ) : (
                             <p className="text-muted mb-0">{providerData[key]}</p>
                           )}
@@ -119,28 +130,6 @@ export default function ProfilProvider() {
                       <hr />
                     </div>
                   ))}
-
-                  {/* Password Field Handling */}
-                  <div className="row">
-                    <div className="col-sm-3">
-                      <p className="mb-0">Password</p>
-                    </div>
-                    <div className="col-sm-9">
-                      {isEditing ? (
-                        <input
-                          type="password"
-                          name="password"
-                          placeholder="Enter new password"
-                          value={editableData.password || ""}
-                          onChange={handleInputChange}
-                          className="form-control"
-                        />
-                      ) : (
-                        <p className="text-muted mb-0">*****</p>
-                      )}
-                    </div>
-                  </div>
-                  <hr />
 
                   <div className="d-flex justify-content-end mt-3">
                     {isEditing ? (
@@ -158,61 +147,58 @@ export default function ProfilProvider() {
             </div>
           </div>
 
-
-
-
-{/* request service from the client */}      
-              <div className="col">
-                <div className="card">
-                  <div className="card-body">
-                    <h5>Client request</h5>
-                      <table className="table table-striped table-hover">
-                        <thead>
-                          <tr>
-                            <th>Client firstName</th>
-                            <th>address</th>
-                            <th>phone</th>
-                            <th>email</th>
-                            <th>service</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                              <td>Client firstName</td>
-                              <td> address</td>
-                              <td>phone</td>
-                              <td>service</td>
-                              <td>state</td>
-                              <td>
-                                <button
-                                  className="btn btn-sm btn-danger"
-                                  //onClick={handleDelete}
-                                >
-                                  Delete
-                                </button>
-                                <button
-                                  className="btn btn-sm btn-secondary"
-                                  //onClick={handleAccept}
-                                >
-                                  accept
-                                </button>
-                                <Link
-                                  className="btn btn-sm btn-secondary"
-                                  to="/provider/Providermessanger"
-                                >
-                                  <i className="bi-cart-fill me-1"></i>
-                                  Contact
-                                </Link>
-                              </td>
-                        </tbody>
-                      </table>
-                   
-                  </div>
-                </div>
+          {/* Request service from the client */}
+          <div className="col">
+            <div className="card">
+              <div className="card-body">
+                <h5>Client requests</h5>
+                <table className="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th>Client</th>
+                      <th>Address</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Service Description</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reservations.length > 0 ? (
+                      reservations.map((reservation) => (
+                        <tr key={reservation._id}>
+                          <td>{reservation.client.firstName}</td>
+                          <td>{reservation.client.address}</td>
+                          <td>{reservation.client.phone}</td>
+                          <td>{reservation.client.email}</td>
+                          <td>{reservation.activityDetails}</td>
+                          <td>
+                            <button className="btn btn-sm btn-success">
+                              Accept
+                            </button>
+                            <button className="btn btn-sm btn-danger">
+                              Decline
+                            </button>
+                            <Link
+                              className="btn btn-sm btn-secondary"
+                              to="/provider/Providermessanger"
+                            >
+                              Contact
+                            </Link>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6">No client requests found.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
-
-            {/** */}
+          </div>
+        </div>
       </section>
       <Footer />
     </div>
