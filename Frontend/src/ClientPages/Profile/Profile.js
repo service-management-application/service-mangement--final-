@@ -138,13 +138,6 @@ export default function ProfilePage() {
 
 
 
-  const handleUpdate = (job) => {
-    // Logic to open an update form or modal pre-filled with `job` details.
-    console.log("Update Job:", job);
-  };
-
-
-
 
 
   const handleDelete = async (jobId) => {
