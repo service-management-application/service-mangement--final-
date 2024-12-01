@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar/ClientNavbar";
 import Footer from "../../Components/Footer/Footer";
 import { toast, ToastContainer } from "react-toastify";
@@ -10,6 +9,8 @@ export default function ProfilePage() {
   const [clientData, setClientData] = useState(null);
   const [newAddress, setNewAddress] = useState("");
   const [newPhone, setNewPhone] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [showJobForm, setShowJobForm] = useState(false);
   const [jobRequest, setJobRequest] = useState({
@@ -17,29 +18,26 @@ export default function ProfilePage() {
     date: "",
     description: "",
   });
-
   const [showHistory, setShowHistory] = useState(false);
   const [jobHistory, setJobHistory] = useState([]);
 
-  // Fetch client data and job history
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Get client data from local storage
         const data = JSON.parse(localStorage.getItem("clientData"));
         if (data) {
           setClientData(data);
           setNewAddress(data.address || "");
           setNewPhone(data.phone || "");
-          
-          // Fetch job history using the clientId from clientData
-          const clientId = data._id;
-          if (clientId) {
-            const response = await axios.get(`http://localhost:4000/services/client/${clientId}`);
-            setJobHistory(response.data || []);
-          } else {
-            console.error("Client ID is missing in local storage.");
-          }
+          setNewEmail(data.email || "");
+        }
+
+        const clientId = data?._id;
+        if (clientId) {
+          const response = await axios.get(
+            `http://localhost:4000/services/client/${clientId}`
+          );
+          setJobHistory(response.data || []);
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -49,26 +47,43 @@ export default function ProfilePage() {
     fetchData();
   }, []);
 
-// Save profile changes
-const handleSaveChanges = () => {
-  if (newAddress.trim() || newPhone.trim() || clientData.firstName || clientData.lastName ) {
-    // Update the clientData state with the new fields
-    const updatedData = {
-      ...clientData,
-      firstName: clientData.firstName,  // Ensuring first name is retained
-      lastName: clientData.lastName,
-      address: newAddress,
-      phone: newPhone
-    };
+  const handleSaveChanges = async () => {
+    if (
+      newAddress.trim() ||
+      newPhone.trim() ||
+      newEmail.trim() ||
+      newPassword.trim() ||
+      clientData.firstName ||
+      clientData.lastName
+    ) {
+      const updatedData = {
+        ...clientData,
+        firstName: clientData.firstName,
+        lastName: clientData.lastName,
+        address: newAddress,
+        phone: newPhone,
+        email: newEmail,
+        password: newPassword,
+      };
 
-    // Save the updated data to localStorage
-    setClientData(updatedData); // This updates the component state
-    localStorage.setItem("clientData", JSON.stringify(updatedData));
-    
-    toast.success("Profile updated successfully!");
-  }
-};
+      setClientData(updatedData);
+      localStorage.setItem("clientData", JSON.stringify(updatedData));
 
+      try {
+        const response = await axios.put(
+          `http://localhost:4000/clients/update/${clientData.id}`,
+          updatedData
+        );
+        if (response.status === 200) {
+          toast.success("Profile updated successfully!");
+          window.location.reload();
+        }
+      } catch (err) {
+        console.error("Error updating profile:", err);
+        toast.error("Error updating profile. Please try again.");
+      }
+    }
+  };
 
   const toggleEditMode = () => {
     if (isEditMode) {
@@ -77,7 +92,6 @@ const handleSaveChanges = () => {
     setIsEditMode(!isEditMode);
   };
 
-  // Handle job request form changes
   const handleJobRequestChange = (e) => {
     const { name, value } = e.target;
     setJobRequest((prev) => ({
@@ -86,27 +100,29 @@ const handleSaveChanges = () => {
     }));
   };
 
-  // Submit job request
   const handleJobRequestSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const clientData = JSON.parse(localStorage.getItem("clientData"));
-  
-      if (!clientData || !clientData.id) { 
+
+      if (!clientData || !clientData.id) {
         toast.error("Client information is missing. Please log in again.");
         return;
       }
-  
+
       const requestData = {
         title: jobRequest.title,
         date: jobRequest.date,
         description: jobRequest.description,
-        Client: clientData.id, // Fix: Use `id` from `clientData`
+        Client: clientData.id,
       };
-  
-      const response = await axios.post("http://localhost:4000/services/create", requestData);
-  
+
+      const response = await axios.post(
+        "http://localhost:4000/services/create",
+        requestData
+      );
+
       if (response.status === 201) {
         toast.success("Job request submitted successfully!");
         setJobRequest({ title: "", date: "", description: "" });
@@ -118,10 +134,49 @@ const handleSaveChanges = () => {
       toast.error("Error submitting job request. Please check your input.");
     }
   };
-  
-  
 
-  const toggleHistory = () => {
+
+
+
+  const handleUpdate = (job) => {
+    // Logic to open an update form or modal pre-filled with `job` details.
+    console.log("Update Job:", job);
+  };
+
+
+
+
+
+  const handleDelete = async (jobId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:4000/services/delete/${jobId}`
+      );
+      if (response.status === 200) {
+        toast.success("Job deleted successfully!");
+        // Remove deleted job from the history
+        setJobHistory((prev) => prev.filter((job) => job._id !== jobId));
+      }
+    } catch (err) {
+      console.error("Error deleting job:", err);
+      toast.error("Failed to delete the job. Please try again.");
+    }
+  };
+
+  const toggleHistory = async () => {
+    if (!showHistory) {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/services/getall"
+        );
+        if (response.status === 200) {
+          setJobHistory(response.data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching job history:", err);
+        toast.error("Failed to load job history. Please try again.");
+      }
+    }
     setShowHistory((prev) => !prev);
   };
 
@@ -138,7 +193,6 @@ const handleSaveChanges = () => {
             <div className="col">
               <nav aria-label="breadcrumb">
                 <ol className="breadcrumb bg-light rounded-3 p-3">
-                  
                   <li className="breadcrumb-item active" aria-current="page">
                     Client Profile
                   </li>
@@ -152,16 +206,14 @@ const handleSaveChanges = () => {
               <div className="card text-center">
                 <div className="card-body">
                   <img
-                    src={clientData.image || "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"}
+                    src={
+                      clientData.image ||
+                      "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                    }
                     alt="avatar"
                     className="rounded-circle mb-3"
                     style={{ width: "150px" }}
                   />
-                  <div className="d-flex justify-content-center mb-3">
-                    <Link to="/client/ClientMessanger" className="btn btn-success">
-                      Messagerie
-                    </Link>
-                  </div>
                   <div className="d-flex justify-content-center mb-3">
                     <button
                       className="btn btn-primary"
@@ -171,8 +223,11 @@ const handleSaveChanges = () => {
                     </button>
                   </div>
                   <div className="d-flex justify-content-center mt-3">
-                    <button className="btn btn-secondary" onClick={toggleHistory}>
-                      {showHistory ? "Close History" : "Historique"}
+                    <button
+                      className="btn btn-secondary"
+                      onClick={toggleHistory}
+                    >
+                      {showHistory ? "Close History" : "Jobs History"}
                     </button>
                   </div>
                 </div>
@@ -182,49 +237,91 @@ const handleSaveChanges = () => {
             <div className="col-lg-8">
               <div className="card mb-4">
                 <div className="card-body">
-                  {["firstName", "lastName", "email"].map((field) => (
-                    <React.Fragment key={field}>
-                      <div className="row">
-                        <div className="col-sm-3">
-                          <p className="mb-0">{field === "firstName" ? "First Name" : field === "lastName" ? "Last Name" : "Email"}</p>
+                  {["firstName", "lastName", "email", "password"].map(
+                    (field) => (
+                      <React.Fragment key={field}>
+                        <div className="row">
+                          <div className="col-sm-3">
+                            <p className="mb-0">
+                              {field === "firstName"
+                                ? "First Name"
+                                : field === "lastName"
+                                ? "Last Name"
+                                : field === "email"
+                                ? "Email"
+                                : "Password"}
+                            </p>
+                          </div>
+                          <div className="col-sm-9">
+                            {isEditMode &&
+                            field !== "email" &&
+                            field !== "password" ? (
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={clientData[field]}
+                                onChange={(e) =>
+                                  setClientData((prev) => ({
+                                    ...prev,
+                                    [field]: e.target.value,
+                                  }))
+                                }
+                              />
+                            ) : field === "email" && isEditMode ? (
+                              <input
+                                type="email"
+                                className="form-control"
+                                value={newEmail}
+                                onChange={(e) => setNewEmail(e.target.value)}
+                              />
+                            ) : field === "password" && isEditMode ? (
+                              <input
+                                type="password"
+                                className="form-control"
+                                placeholder="Enter new password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                              />
+                            ) : (
+                              <p className="text-muted mb-0">
+                                {field === "password"
+                                  ? "••••••••"
+                                  : clientData[field]}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <div className="col-sm-9">
-                          {isEditMode && field !== "email" ? (
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={clientData[field]}
-                              onChange={(e) =>
-                                setClientData((prev) => ({ ...prev, [field]: e.target.value }))
-                              }
-                            />
-                          ) : (
-                            <p className="text-muted mb-0">{clientData[field]}</p>
-                          )}
-                        </div>
-                      </div>
-                      <hr />
-                    </React.Fragment>
-                  ))}
+                        <hr />
+                      </React.Fragment>
+                    )
+                  )}
 
                   {["address", "phone"].map((field) => (
                     <React.Fragment key={field}>
                       <div className="row">
                         <div className="col-sm-3">
-                          <p className="mb-0">{field === "address" ? "Address" : "Phone"}</p>
+                          <p className="mb-0">
+                            {field === "address" ? "Address" : "Phone"}
+                          </p>
                         </div>
                         <div className="col-sm-9">
                           {isEditMode ? (
                             <input
                               type={field === "phone" ? "tel" : "text"}
                               className="form-control"
-                              value={field === "address" ? newAddress : newPhone}
+                              value={
+                                field === "address" ? newAddress : newPhone
+                              }
                               onChange={(e) =>
-                                field === "address" ? setNewAddress(e.target.value) : setNewPhone(e.target.value)
+                                field === "address"
+                                  ? setNewAddress(e.target.value)
+                                  : setNewPhone(e.target.value)
                               }
                             />
                           ) : (
-                            <p className="text-muted mb-0">{clientData[field]}</p>
+                            <p className="text-muted mb-0">
+                              {clientData[field]}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -233,7 +330,10 @@ const handleSaveChanges = () => {
                   ))}
 
                   <div className="d-flex justify-content-end mt-3">
-                    <button onClick={toggleEditMode} className="btn btn-warning">
+                    <button
+                      onClick={toggleEditMode}
+                      className="btn btn-warning"
+                    >
                       {isEditMode ? "Save Changes" : "Edit Profile"}
                     </button>
                   </div>
@@ -243,49 +343,47 @@ const handleSaveChanges = () => {
           </div>
 
           {showJobForm && (
-            <div className="row mt-4">
-              <div className="col-lg-8 offset-lg-2">
+            <div className="row mt-3">
+              <div className="col">
                 <div className="card">
                   <div className="card-body">
-                    <h4 className="card-title">Request a Job</h4>
+                    <h5>Submit a Job Request</h5>
                     <form onSubmit={handleJobRequestSubmit}>
                       <div className="mb-3">
-                        <label htmlFor="title" className="form-label">Request Title</label>
+                        <label className="form-label">Job Title</label>
                         <input
                           type="text"
                           className="form-control"
-                          id="title"
                           name="title"
-                          placeholder="Enter job title"
                           value={jobRequest.title}
                           onChange={handleJobRequestChange}
+                          required
                         />
                       </div>
                       <div className="mb-3">
-                        <label htmlFor="date" className="form-label">Date</label>
+                        <label className="form-label">Date</label>
                         <input
                           type="date"
                           className="form-control"
-                          id="date"
                           name="date"
                           value={jobRequest.date}
                           onChange={handleJobRequestChange}
+                          required
                         />
                       </div>
                       <div className="mb-3">
-                        <label htmlFor="description" className="form-label">Job Description</label>
+                        <label className="form-label">Description</label>
                         <textarea
                           className="form-control"
-                          id="description"
                           name="description"
-                          placeholder="Enter job description"
-                          rows="4"
+                          rows="3"
                           value={jobRequest.description}
                           onChange={handleJobRequestChange}
+                          required
                         />
                       </div>
                       <button type="submit" className="btn btn-primary">
-                        Submit Request
+                        Submit
                       </button>
                     </form>
                   </div>
@@ -295,26 +393,50 @@ const handleSaveChanges = () => {
           )}
 
           {showHistory && (
-            <div className="mt-4">
-              <h4>Job History</h4>
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Date</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {jobHistory.map((job) => (
-                    <tr key={job.id}>
-                      <td>{job.title}</td>
-                      <td>{job.date}</td>
-                      <td>{job.description}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="row mt-3">
+              <div className="col">
+                <div className="card">
+                  <div className="card-body">
+                    <h5>Job History</h5>
+                    {jobHistory.length > 0 ? (
+                      <table className="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {jobHistory.map((job) => (
+                            <tr key={job._id}>
+                              <th scope="row" hidden>
+                                {job._id}{" "}
+                              </th>
+
+                              <td>{job.title}</td>
+                              <td>{new Date(job.date).toLocaleDateString()}</td>
+                              <td>{job.description}</td>
+                              <td>
+
+                                <button
+                                  className="btn btn-sm btn-danger"
+                                  onClick={() => handleDelete(job._id)}
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p>No job history found.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

@@ -9,13 +9,13 @@ router.post("/Create", serviceController.createService);
 router.get("/getall", serviceController.getAllServices);
 
 // Get a single service by ID
-router.get("/:id", serviceController.getServiceById);
+router.get("/get/:id", serviceController.getServiceById);
 
 // Update a service
-router.put("/:id", serviceController.updateService);
+router.put("/update/:id", serviceController.updateService);
 
 // Delete a service
-router.delete("/:id", serviceController.deleteService);
+router.delete("/delete/:id", serviceController.deleteService);
 // get service by client id
 router.get("/client/:clientId", serviceController.getServicesByClientId);
 

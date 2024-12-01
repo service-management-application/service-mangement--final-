@@ -11,6 +11,8 @@ export default function RegisterClient() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    phone: '',
+    address: '',
     email: '',
     password: ''
   });
@@ -105,6 +107,34 @@ export default function RegisterClient() {
                               required
                             />
                             <label className="form-label" htmlFor="lastName">Last name</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6 mb-4">
+                          <div className="form-outline">
+                            <input
+                              type="text"
+                              name="phone"
+                              value={formData.phone}
+                              onChange={handleChange}
+                              className="form-control"
+                              required
+                            />
+                            <label className="form-label" htmlFor="firstName">Phone</label>
+                          </div>
+                        </div>
+                        <div className="col-md-6 mb-4">
+                          <div className="form-outline">
+                            <input
+                              type="text"
+                              name="address"
+                              value={formData.address}
+                              onChange={handleChange}
+                              className="form-control"
+                              required
+                            />
+                            <label className="form-label" htmlFor="lastName">Address</label>
                           </div>
                         </div>
                       </div>
