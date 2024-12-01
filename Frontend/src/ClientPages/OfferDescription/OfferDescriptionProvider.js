@@ -8,6 +8,7 @@ export default function OfferDescription() {
   const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const fetchProvider = async () => {
@@ -31,6 +32,10 @@ export default function OfferDescription() {
         setLoading(false);
       }
     };
+
+    // Check if the user is logged in (i.e., check for the provider token in localStorage)
+    const token = localStorage.getItem("ClientToken");
+    setIsLoggedIn(!!token); // If token exists, set isLoggedIn to true
 
     fetchProvider();
   }, []);
@@ -86,13 +91,16 @@ export default function OfferDescription() {
                     <i className="bi-cart-fill me-1"></i>
                     Contact Client
                   </Link>
-                  <Link
-                    className="btn btn-outline-dark flex-shrink-0"
-                    to="/provider/Providermessanger"
-                  >
-                    <i className="bi-cart-fill me-1"></i>
-                        Reserver                 
-                 </Link>
+                  {/* Conditionally render the Reserve button based on login status */}
+                  {isLoggedIn && (
+                    <Link
+                      className="btn btn-outline-dark flex-shrink-0"
+                      to="/provider/Providermessanger"
+                    >
+                      <i className="bi-cart-fill me-1"></i>
+                      Reserver
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
