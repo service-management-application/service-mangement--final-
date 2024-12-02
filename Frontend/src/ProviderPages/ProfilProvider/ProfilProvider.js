@@ -36,23 +36,13 @@ export default function ProfilProvider() {
 
   const handleAccept = async (reservationId) => {
     try {
-      // Retrieve the providerId from localStorage
-      const providerId = localStorage.getItem("providerId");
-  
-      if (!providerId) {
-        toast.error("Provider not logged in.");
-        return;
-      }
-  
-      // Call the API to update the reservation status to 'APPROVED'
       const response = await axios.put(
-        `http://localhost:4000/reservations/accept/${reservationId}`, 
-        { providerId } // Send providerId in the request body
+        `http://localhost:4000/reservations/accept/${reservationId}`,
+        { providerId: providerData.id } // Pass providerId in the body
       );
-  
       if (response.status === 200) {
         toast.success("Reservation accepted!");
-        // Update the status of the reservation locally
+        // Update the reservations locally
         setReservations((prevReservations) =>
           prevReservations.map((reservation) =>
             reservation._id === reservationId
@@ -66,19 +56,14 @@ export default function ProfilProvider() {
       toast.error("Error accepting reservation. Please try again.");
     }
   };
-  
-
-  const handleDecline = async (reservationId) => {
+  const handleReject = async (reservationId) => {
     try {
-      // Call the API to update the reservation status to 'REJECTED'
       const response = await axios.put(
-        `http://localhost:4000/reservations/update/${reservationId}`,
-        { status: 'REJECTED' } // Sending status update
+        `http://localhost:4000/reservations/reject/${reservationId}`,
+        { providerId: providerData.id }
       );
-
       if (response.status === 200) {
         toast.success("Reservation rejected!");
-        // Update the status of the reservation locally
         setReservations((prevReservations) =>
           prevReservations.map((reservation) =>
             reservation._id === reservationId
@@ -92,6 +77,9 @@ export default function ProfilProvider() {
       toast.error("Error rejecting reservation. Please try again.");
     }
   };
+    
+
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -225,13 +213,13 @@ export default function ProfilProvider() {
                           <td>{reservation.client.address}</td>
                           <td>{reservation.client.phone}</td>
                           <td>{reservation.client.email}</td>
-                          <td>{reservation.activityDetails}</td>
                           <td>{reservation.status}</td>
+                          <td>{reservation.activityDetails}</td>
                           <td>
                             <button className="btn btn-sm btn-success" onClick={() => handleAccept(reservation._id)}>
                               Accept
                             </button>
-                            <button className="btn btn-sm btn-danger" onClick={() => handleDecline(reservation._id)}>
+                            <button className="btn btn-sm btn-danger" onClick={() => handleReject(reservation._id)}>
                               Decline
                             </button>
                             <Link className="btn btn-sm btn-secondary" to="/provider/Providermessanger">
