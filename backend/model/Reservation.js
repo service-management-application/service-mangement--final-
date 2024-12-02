@@ -16,6 +16,11 @@ const ReservationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['PENDING', 'APPROVED', 'REJECTED'],
+    default: 'PENDING', // Default status is PENDING
+  },
 }, {
   timestamps: true, // Ajout des champs createdAt et updatedAt automatiquement
 });

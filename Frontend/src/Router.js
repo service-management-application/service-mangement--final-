@@ -16,6 +16,7 @@ const OfferDescriptionProvider = lazy(() => import("./ClientPages/OfferDescripti
 
 const Aboutus = lazy(() => import("./ClientPages/AboutUs/AboutUs.js"));
 const Profile = lazy(() => import("./ClientPages/Profile/Profile.js"));
+const HistoriqueReservations = lazy(() => import("./ClientPages/HistoriqueReservations/HistoriqueReservations.js"));
 
 const ClientMessanger = lazy(() =>import("./ClientPages/ClientMessanger/ClientMessanger.js"));
 const Dashboard = lazy(() => import("./AdminPages/Dashboard/Dashboard.js"));
@@ -62,8 +63,8 @@ export default function Router() {
           <Route path='/LoginClient' element={<LoginClient  />} />
           <Route path='/RegisterClient' element={<Registerclient  /> } />
           <Route path="Client/OfferDescriptionProvider" element={<OfferDescriptionProvider />} />
-
-
+          <Route path="Client/HistoriqueReservations" element={<HistoriqueReservations />} />
+          
           {/* <!-- Admin Pages --> */}
 
           <Route path="Admin/Dashboard" element={<Dashboard />} />

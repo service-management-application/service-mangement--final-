@@ -34,6 +34,56 @@ export default function ProfilProvider() {
     }
   };
 
+  const handleAccept = async (reservationId) => {
+    try {
+      // Call the API to update the reservation status to 'APPROVED'
+      const response = await axios.put(
+        `http://localhost:4000/reservations/update/${reservationId}`, 
+        { status: 'APPROVED' } // Sending status update
+      );
+      
+      if (response.status === 200) {
+        toast.success("Reservation accepted!");
+        // Update the status of the reservation locally
+        setReservations((prevReservations) =>
+          prevReservations.map((reservation) =>
+            reservation._id === reservationId
+              ? { ...reservation, status: "APPROVED" }
+              : reservation
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error accepting reservation:", error);
+      toast.error("Error accepting reservation. Please try again.");
+    }
+  };
+
+  const handleDecline = async (reservationId) => {
+    try {
+      // Call the API to update the reservation status to 'REJECTED'
+      const response = await axios.put(
+        `http://localhost:4000/reservations/update/${reservationId}`,
+        { status: 'REJECTED' } // Sending status update
+      );
+
+      if (response.status === 200) {
+        toast.success("Reservation rejected!");
+        // Update the status of the reservation locally
+        setReservations((prevReservations) =>
+          prevReservations.map((reservation) =>
+            reservation._id === reservationId
+              ? { ...reservation, status: "REJECTED" }
+              : reservation
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error rejecting reservation:", error);
+      toast.error("Error rejecting reservation. Please try again.");
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditableData((prev) => ({ ...prev, [name]: value }));
@@ -99,37 +149,31 @@ export default function ProfilProvider() {
             <div className="col-lg-8">
               <div className="card mb-4">
                 <div className="card-body">
-                  {[
-                    { label: "First Name", key: "firstName" },
-                    { label: "Last Name", key: "lastName" },
-                    { label: "Email", key: "email" },
-                    { label: "Phone", key: "phoneNumber" },
-                    { label: "State", key: "state" },
-                    { label: "Description", key: "activity_description" },
-                    { label: "Price", key: "price" },
-                  ].map(({ label, key }) => (
-                    <div key={key}>
-                      <div className="row">
-                        <div className="col-sm-3">
-                          <p className="mb-0">{label}</p>
+                  {[{ label: "First Name", key: "firstName" }, { label: "Last Name", key: "lastName" }, { label: "Email", key: "email" }, { label: "Phone", key: "phoneNumber" }, { label: "State", key: "state" }, { label: "Description", key: "activity_description" }, { label: "Price", key: "price" }].map(
+                    ({ label, key }) => (
+                      <div key={key}>
+                        <div className="row">
+                          <div className="col-sm-3">
+                            <p className="mb-0">{label}</p>
+                          </div>
+                          <div className="col-sm-9">
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                name={key}
+                                value={editableData[key]}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            ) : (
+                              <p className="text-muted mb-0">{providerData[key]}</p>
+                            )}
+                          </div>
                         </div>
-                        <div className="col-sm-9">
-                          {isEditing ? (
-                            <input
-                              type="text"
-                              name={key}
-                              value={editableData[key]}
-                              onChange={handleInputChange}
-                              className="form-control"
-                            />
-                          ) : (
-                            <p className="text-muted mb-0">{providerData[key]}</p>
-                          )}
-                        </div>
+                        <hr />
                       </div>
-                      <hr />
-                    </div>
-                  ))}
+                    )
+                  )}
 
                   <div className="d-flex justify-content-end mt-3">
                     {isEditing ? (
@@ -160,6 +204,7 @@ export default function ProfilProvider() {
                       <th>Phone</th>
                       <th>Email</th>
                       <th>Service Description</th>
+                      <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -172,17 +217,15 @@ export default function ProfilProvider() {
                           <td>{reservation.client.phone}</td>
                           <td>{reservation.client.email}</td>
                           <td>{reservation.activityDetails}</td>
+                          <td>{reservation.status}</td>
                           <td>
-                            <button className="btn btn-sm btn-success">
+                            <button className="btn btn-sm btn-success" onClick={() => handleAccept(reservation._id)}>
                               Accept
                             </button>
-                            <button className="btn btn-sm btn-danger">
+                            <button className="btn btn-sm btn-danger" onClick={() => handleDecline(reservation._id)}>
                               Decline
                             </button>
-                            <Link
-                              className="btn btn-sm btn-secondary"
-                              to="/provider/Providermessanger"
-                            >
+                            <Link className="btn btn-sm btn-secondary" to="/provider/Providermessanger">
                               Contact
                             </Link>
                           </td>
