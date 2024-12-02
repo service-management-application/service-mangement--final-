@@ -4,6 +4,8 @@ import Footer from "../../Components/Footer/Footer";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { Link } from "react-router-dom"; // Import Link for routing
+
 
 export default function ProfilePage() {
   const [clientData, setClientData] = useState(null);
@@ -225,6 +227,13 @@ export default function ProfilePage() {
                       {showHistory ? "Close History" : "Jobs History"}
                     </button>
                   </div>
+                  <div className="d-flex justify-content-center mt-3">
+  <Link to="/Client/HistoriqueReservations">
+    <button className="btn btn-secondary">
+      View Historic Reservation
+    </button>
+  </Link>
+</div>
                 </div>
               </div>
             </div>
