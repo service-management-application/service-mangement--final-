@@ -48,8 +48,6 @@ const AdminNavbar = () => {
                 }
                 id="admin-nav-dropdown"
               >
-                <NavDropdown.Item href="/admin/adminprofile">Profile</NavDropdown.Item>
-                <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout}>Log Out</NavDropdown.Item>
               </NavDropdown>
             ) : (
