@@ -36,12 +36,20 @@ export default function ProfilProvider() {
 
   const handleAccept = async (reservationId) => {
     try {
+      // Retrieve the providerId from localStorage
+      const providerId = localStorage.getItem("providerId");
+  
+      if (!providerId) {
+        toast.error("Provider not logged in.");
+        return;
+      }
+  
       // Call the API to update the reservation status to 'APPROVED'
       const response = await axios.put(
-        `http://localhost:4000/reservations/update/${reservationId}`, 
-        { status: 'APPROVED' } // Sending status update
+        `http://localhost:4000/reservations/accept/${reservationId}`, 
+        { providerId } // Send providerId in the request body
       );
-      
+  
       if (response.status === 200) {
         toast.success("Reservation accepted!");
         // Update the status of the reservation locally
@@ -58,6 +66,7 @@ export default function ProfilProvider() {
       toast.error("Error accepting reservation. Please try again.");
     }
   };
+  
 
   const handleDecline = async (reservationId) => {
     try {
