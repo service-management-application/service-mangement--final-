@@ -136,7 +136,7 @@ export default function OfferDescription() {
                     className="btn btn-outline-dark flex-shrink-0"
                     to="/provider/Providermessanger"
                   >
-                    Contact Client
+                    Contact Provider
                   </Link>
 
                   {isLoggedIn && (
