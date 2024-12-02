@@ -144,18 +144,20 @@ exports.acceptReservation = async (req, res) => {
 
   
   // Reject a reservation (change status to REJECTED)
-  exports.rejectReservation = async (req, res) => {
+exports.rejectReservation = async (req, res) => {
     const { reservationId } = req.params;
+    const { providerId } = req.body; // Ensure this is passed in the request body
   
     try {
+      // Find the reservation by ID
       const reservation = await Reservation.findById(reservationId);
   
       if (!reservation) {
         return res.status(404).json({ message: 'Reservation not found' });
       }
   
-      // Check if the provider is the one who made the reservation
-      if (reservation.provider.toString() !== req.provider.id) {
+      // Ensure the reservation belongs to the correct provider
+      if (reservation.provider.toString() !== providerId) {
         return res.status(403).json({ message: 'You are not authorized to reject this reservation' });
       }
   
@@ -163,10 +165,16 @@ exports.acceptReservation = async (req, res) => {
       reservation.status = 'REJECTED';
       await reservation.save();
   
-      return res.status(200).json({ message: 'Reservation rejected', reservation });
+      return res.status(200).json({
+        message: 'Reservation rejected successfully',
+        reservation,
+      });
     } catch (error) {
       console.error('Error rejecting reservation:', error);
-      return res.status(500).json({ message: 'Failed to reject reservation', error: error.message });
+      return res.status(500).json({
+        message: 'Failed to reject reservation',
+        error: error.message,
+      });
     }
   };
   
