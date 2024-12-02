@@ -116,30 +116,32 @@ exports.updateReservation = async (req, res) => {
 
 // Accept a reservation (change status to APPROVED)
 exports.acceptReservation = async (req, res) => {
-    const { reservationId } = req.params;
+  const { reservationId } = req.params;
+  const { providerId } = req.body;  // Get providerId from request body
   
-    try {
-      const reservation = await Reservation.findById(reservationId);
-  
-      if (!reservation) {
-        return res.status(404).json({ message: 'Reservation not found' });
-      }
-  
-      // Check if the provider is the one who made the reservation
-      if (reservation.provider.toString() !== req.provider.id) {
-        return res.status(403).json({ message: 'You are not authorized to accept this reservation' });
-      }
-  
-      // Update the reservation status to APPROVED
-      reservation.status = 'APPROVED';
-      await reservation.save();
-  
-      return res.status(200).json({ message: 'Reservation approved', reservation });
-    } catch (error) {
-      console.error('Error accepting reservation:', error);
-      return res.status(500).json({ message: 'Failed to accept reservation', error: error.message });
+  try {
+    const reservation = await Reservation.findById(reservationId);
+
+    if (!reservation) {
+      return res.status(404).json({ message: 'Reservation not found' });
     }
-  };
+
+    // Check if the provider is the one who made the reservation
+    if (reservation.provider.toString() !== providerId) {
+      return res.status(403).json({ message: 'You are not authorized to accept this reservation' });
+    }
+
+    // Update the reservation status to APPROVED
+    reservation.status = "APPROVED";
+    await reservation.save();
+
+    return res.status(200).json({ message: 'Reservation approved', reservation });
+  } catch (error) {
+    console.error('Error accepting reservation:', error);
+    return res.status(500).json({ message: 'Failed to accept reservation', error: error.message });
+  }
+};
+
   
   // Reject a reservation (change status to REJECTED)
   exports.rejectReservation = async (req, res) => {
