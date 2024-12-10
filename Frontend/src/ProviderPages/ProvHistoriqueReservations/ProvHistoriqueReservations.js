@@ -123,14 +123,16 @@ const ProvHistoriqueReservations = () => {
                       {new Date(reservation.createdAt).toLocaleDateString()}
                     </td>
                     <td>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() =>
-                          handleCancelReservation(reservation._id)
-                        }
-                      >
-                        Cancel
-                      </button>
+                      {reservation.status?.toLowerCase() === "pending" && (
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() =>
+                            handleCancelReservation(reservation._id)
+                          }
+                        >
+                          Cancel
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
