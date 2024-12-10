@@ -1,48 +1,90 @@
-require('dotenv').config();
+require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
-//importing routes
-const ClientRoutes = require('./routes/Client'); 
-const ProviderRoutes = require('./routes/Provider');
-const categoryRoutes = require('./routes/CategoryRoutes');
-const serviceRoutes = require("./routes/ServiceRoutes");
-const AdminRoutes = require('./routes/AdminRoutes');
-const ReservationRoutes = require('./routes/ReservationRoutes');
+// Importing routes
+const ClientRoutes = require("./routes/Client");
+const ProviderRoutes = require("./routes/Provider");
+const CategoryRoutes = require("./routes/CategoryRoutes");
+const ServiceRoutes = require("./routes/ServiceRoutes");
+const AdminRoutes = require("./routes/AdminRoutes");
+const ReservationRoutes = require("./routes/ReservationRoutes");
+const ReservationServiceRoutes = require("./routes/ReservationServiceRoute");
 
+const app = express();
 
-const cookieParser = require('cookie-parser');
-
-const app=express();
+// CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow requests from this origin
-  credentials: true, // Allow cookies and credentials // Allow only GET and POST methods
-  allowedHeaders: ['Content-Type'], // Allow Content-Type header
+  origin: "http://localhost:3000", // Allow requests from this origin
+  credentials: true, // Allow cookies and credentials
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Allow specific HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allow Content-Type and Authorization headers
 };
+app.use(cors(corsOptions));
 
-app.use(cors(corsOptions)); 
-app.use(express.json());
-app.use(cookieParser());
-app.use('/clients',ClientRoutes);
-app.use('/providers',ProviderRoutes);
-app.use('/categories', categoryRoutes);
-app.use('/services', serviceRoutes);
-app.use('/admins', AdminRoutes);
-app.use('/reservations', ReservationRoutes);
+// Middleware
+app.use(express.json()); // Parse JSON payloads
+app.use(cookieParser()); // Parse cookies
 
+// Routes
+app.use("/clients", ClientRoutes);
+app.use("/providers", ProviderRoutes);
+app.use("/categories", CategoryRoutes);
+app.use("/services", ServiceRoutes);
+app.use("/admins", AdminRoutes);
+app.use("/reservations", ReservationRoutes);
+app.use("/reservationservices", ReservationServiceRoutes);
 
+// MongoDB connection
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(async () => {
+const startServer = async () => {
+  try {
+    // Ensure `process.env.MONGODB_URI` and `process.env.PORT` are set in your `.env` file
+    if (!process.env.MONGODB_URI || !process.env.PORT) {
+      throw new Error("Missing required environment variables in .env file.");
+    }
+
+    await mongoose.connect(process.env.MONGODB_URI);
+
     console.log("Connected to database!");
 
-    app.listen(process.env.PORT, () => {
-      console.log(`Server is running on port ${process.env.PORT}`);
+    // Start the server
+    const port = process.env.PORT || 5000; // Default to port 5000 if not specified
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
     });
-  })
-  .catch((error) => {
-    console.error("Connection failed:", error);
-  });
+  } catch (error) {
+    console.error("Database connection failed:", error.message);
+    process.exit(1); // Exit the process with failure
+  }
+};
+
+/*
+const startServer = async () => {
+  try {
+    // Ensure `process.env.MONGODB_URI` and `process.env.PORT` are set in your `.env` file
+    if (!process.env.MONGODB_URI || !process.env.PORT) {
+      throw new Error("Missing required environment variables in .env file.");
+    }
+
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log("Connected to database!");
+
+    // Start the server
+    const port = process.env.PORT || 5000; // Default to port 5000 if not specified
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Database connection failed:", error.message);
+    process.exit(1); // Exit the process with failure
+  }
+};
+*/
+startServer();

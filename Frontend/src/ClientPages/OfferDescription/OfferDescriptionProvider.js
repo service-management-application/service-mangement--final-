@@ -50,7 +50,7 @@ export default function OfferDescription() {
     const clientData = JSON.parse(localStorage.getItem("clientData"));
     const clientId = clientData ? clientData.id : null;
     const providerId = localStorage.getItem("selectedProviderId");
-    const activityDetails = provider ? provider.activity_description : null;
+   // const activityDetails = provider ? provider.activity_description : null;
 
     if (!clientId) {
       setReservationError("Client not logged in.");
@@ -58,17 +58,17 @@ export default function OfferDescription() {
       return;
     }
 
-    if (!activityDetails) {
+   /* if (!activityDetails) {
       setReservationError("Activity description is missing.");
       setIsProcessing(false);
       return;
-    }
+    }*/
 
     try {
       const reservationData = {
         client: clientId,
         provider: providerId,
-        activityDetails,
+      //  activityDetails,
       };
 
       // Make the API request to create the reservation
@@ -128,8 +128,8 @@ export default function OfferDescription() {
                     Location: <span>{provider.state || "N/A"}</span>
                   </li>
                 </ul>
-                <h5>Description:</h5>
-                <p className="lead">{provider.activity_description || "No description provided."}</p>
+          {/*   <h5>Description:</h5>
+                <p className="lead">{provider.activity_description || "No description provided."}</p>   */}
                 <div className="d-flex">
                   <Link
                   style={{ marginRight: "10px" }}

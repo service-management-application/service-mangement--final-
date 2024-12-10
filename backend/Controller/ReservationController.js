@@ -8,10 +8,10 @@ exports.createReservation = async (req, res) => {
   console.log('Request Body:', req.body); // Debug log
   
   try {
-    const { client, provider, activityDetails } = req.body;
+    const { client, provider } = req.body;
 
     // Vérification des champs requis
-    if (!client || !provider || !activityDetails) {
+    if (!client || !provider ) {
       return res.status(400).json({ message: 'Missing required fields.' });
     }
 
@@ -19,7 +19,6 @@ exports.createReservation = async (req, res) => {
     const newReservation = new Reservation({
       client,
       provider,
-      activityDetails,
     });
 
     await newReservation.save();
@@ -81,7 +80,7 @@ exports.getProviderReservations = async (req, res) => {
 // Update a specific reservation
 exports.updateReservation = async (req, res) => {
     const { reservationId } = req.params;
-    const { status, client, provider, activityDetails } = req.body; // You can update other fields as needed
+    const { status, client, provider } = req.body; // You can update other fields as needed
   
     try {
       // Find the reservation by ID
@@ -100,7 +99,6 @@ exports.updateReservation = async (req, res) => {
       if (status) reservation.status = status;
       if (client) reservation.client = client; // If the client can be changed
       if (provider) reservation.provider = provider; // If the provider can be changed
-      if (activityDetails) reservation.activityDetails = activityDetails;
   
       // Save the updated reservation
       await reservation.save();
