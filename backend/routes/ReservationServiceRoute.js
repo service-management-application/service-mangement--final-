@@ -26,6 +26,13 @@ router.delete("/:id", ReservationServController.deleteReservation);
 // Update reservation status (Accept and Reject) 
 router.patch('/reservations/:id/status', ReservationServController.updateReservationStatus);
 
+// Check if the reservation is already reserved
+router.get('/check-reservation/:serviceId', ReservationServController.checkReservation);
+
+
+
+
+
 
 
   

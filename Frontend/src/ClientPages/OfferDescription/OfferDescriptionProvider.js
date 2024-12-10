@@ -46,41 +46,35 @@ export default function OfferDescription() {
   const handleReservation = async () => {
     if (isProcessing) return; // Prevent duplicate submissions
     setIsProcessing(true);
-
+  
     const clientData = JSON.parse(localStorage.getItem("clientData"));
     const clientId = clientData ? clientData.id : null;
     const providerId = localStorage.getItem("selectedProviderId");
-   // const activityDetails = provider ? provider.activity_description : null;
-
+  
     if (!clientId) {
       setReservationError("Client not logged in.");
       setIsProcessing(false);
       return;
     }
-
-   /* if (!activityDetails) {
-      setReservationError("Activity description is missing.");
-      setIsProcessing(false);
-      return;
-    }*/
-
+  
     try {
       const reservationData = {
         client: clientId,
         provider: providerId,
-      //  activityDetails,
       };
-
+  
       // Make the API request to create the reservation
-      await axios.post("http://localhost:4000/reservations/create", reservationData);
-
-      // Show success message
+      const response = await axios.post("http://localhost:4000/reservations/create", reservationData);
+  
+      // If reservation is created successfully
       setReservationSuccess(true);
       setReservationError(""); // Clear error
+  
+      // Change button text
+      setIsProcessing(false); // Stop processing (enable button again)
     } catch (err) {
       console.error("Error creating reservation:", err);
-      setReservationError("Failed to reserve activity.");
-    } finally {
+      setReservationError("Already reserved.");
       setIsProcessing(false);
     }
   };
@@ -110,29 +104,19 @@ export default function OfferDescription() {
                       className="rounded-circle mb-3"
                       style={{ width: "150px" }}
                     />
-
                   </div>
                 </div>
               </div>
               <div className="col-md-6">
                 <h1 className="display-5 fw-bolder">{provider.firstName + " " + provider.lastName}</h1>
                 <ul className="fs-5 mb-5">
-                  <li>
-                    Price: <span>{provider.price }</span> $/HR
-                  </li>
-                  <li>
-                    Phone number: <span>{provider.phoneNumber}</span>
-                  </li>
-                  <li>
-                    
-                    Location: <span>{provider.state || "N/A"}</span>
-                  </li>
+                  <li>Price: <span>{provider.price}</span> $/HR</li>
+                  <li>Phone number: <span>{provider.phoneNumber}</span></li>
+                  <li>Location: <span>{provider.state || "N/A"}</span></li>
                 </ul>
-          {/*   <h5>Description:</h5>
-                <p className="lead">{provider.activity_description || "No description provided."}</p>   */}
                 <div className="d-flex">
                   <Link
-                  style={{ marginRight: "10px" }}
+                    style={{ marginRight: "10px" }}
                     className="btn btn-outline-dark flex-shrink-0"
                     to="/provider/Providermessanger"
                   >
@@ -143,9 +127,9 @@ export default function OfferDescription() {
                     <button
                       className="btn btn-outline-dark flex-shrink-0"
                       onClick={handleReservation}
-                      disabled={isProcessing}
+                      disabled={isProcessing || reservationSuccess}
                     >
-                      {isProcessing ? "Processing..." : "Reserve"}
+                      {reservationSuccess ? "Already Reserved" : "Reserve"}
                     </button>
                   )}
                 </div>
