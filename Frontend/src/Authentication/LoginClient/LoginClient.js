@@ -56,8 +56,8 @@ const LoginClient = () => {
             <div className="row gx-lg-5 align-items-center">
               <div className="col-lg-6 mb-5 mb-lg-0">
                 <h1 className="my-5 display-3 fw-bold ls-tight">
-                  LOG
-                  <span className="text-primary">IN</span>
+                  LOGIN<br/>
+                  <span className="text-primary">AS CLIENT</span>
                 </h1>
               </div>
 
@@ -97,7 +97,7 @@ const LoginClient = () => {
 
                     <h6>
                       Don't have an account yet?
-                      <Link to="/join" style={{ textDecoration: "none" }}>
+                      <Link to="/RegisterClient" style={{ textDecoration: "none" }}>
                         {" "}
                         Sign up here
                       </Link>

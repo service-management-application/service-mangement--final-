@@ -247,7 +247,7 @@ export default function Register_Provider() {
 
                     <h6>
                       Already have an account?
-                      <Link to="/join" style={{ textDecoration: "none" }}>
+                      <Link to="/loginProvider" style={{ textDecoration: "none" }}>
                         {" "} Log in
                       </Link>
                     </h6>
