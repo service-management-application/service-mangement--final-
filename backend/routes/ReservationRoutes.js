@@ -19,6 +19,8 @@ router.get('/', ReservationController.getAllReservations);
 
 // Get all reservations for a specific client
 router.get('/client/:clientId', ReservationController.getClientReservations);
+// Delete a reservation
+router.delete('/delete/:reservationId', ReservationController.deleteReservation);
 
 
 // Get all reservations for a specific provider
