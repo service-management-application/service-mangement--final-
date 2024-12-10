@@ -12,25 +12,40 @@ exports.createReservation = async (req, res) => {
       return res.status(400).json({ message: "Service and provider are required." });
     }
 
-    // Ensure the Service and Provider exist
-    const serviceExists = await Service.findById(serviceId);
-    if (!serviceExists) {
+    // Ensure the Service exists and retrieve the client ID
+    const service = await Service.findById(serviceId).populate("Client");
+    if (!service) {
       return res.status(404).json({ message: "Service not found." });
     }
 
+    // Ensure the Provider exists
     const providerExists = await Provider.findById(providerId);
     if (!providerExists) {
       return res.status(404).json({ message: "Provider not found." });
     }
 
+    // Extract the client ID from the Service document
+    const clientId = service.Client._id;
+
     // Create and save the new reservation
     const newReservation = new ReservationService({
       Service: serviceId,
       provider: providerId,
+      client: clientId, 
     });
 
     const savedReservation = await newReservation.save();
-    return res.status(201).json({ message: "Reservation created successfully.", reservation: savedReservation });
+
+    // Fetch all reservations for the client
+    const clientReservations = await ReservationService.find({ client: clientId })
+      .populate("Service", "name description price")
+      .populate("provider", "name email");
+
+    return res.status(201).json({
+      message: "Reservation created successfully.",
+      reservation: savedReservation,
+      clientReservations, // Return all client reservations
+    });
   } catch (error) {
     console.error("Error creating reservation:", error);
     return res.status(500).json({ message: "Internal server error.", error: error.message });
@@ -41,8 +56,8 @@ exports.createReservation = async (req, res) => {
 exports.getReservations = async (req, res) => {
   try {
     const reservations = await ReservationService.find()
-      .populate("Service", "name description price") // Adjust fields to include only necessary details
-      .populate("provider", "name email"); // Adjust fields for providers
+      .populate("Service", "name description price") 
+      .populate("provider", "name email");
 
     return res.status(200).json({ reservations });
   } catch (error) {
@@ -56,25 +71,22 @@ exports.getProviderReservations = async (req, res) => {
   const providerId = req.params.providerId;
 
   try {
-      // Ensure the provider exists in the database
       const provider = await Provider.findById(providerId);
       if (!provider) {
           return res.status(404).json({ message: "Provider not found" });
       }
 
-      // Fetch reservations and populate the necessary fields
       const reservations = await ReservationService.find({ provider: providerId })
           .populate({
               path: "Service",
-              select: "title description price", // Select service details
+              select: "title description price",
               populate: {
-                  path: "Client", // Populate the Client field within Service
-                  select: "firstName lastName email" // Select client details
+                  path: "Client",
+                  select: "firstName lastName email"
               }
           })
-          .populate("provider", "email"); // Populate provider's email
+          .populate("provider", "email");
 
-      // Return the reservations with the populated data
       return res.status(200).json({ reservations });
   } catch (error) {
       console.error("Error fetching provider reservations:", error);
@@ -82,101 +94,36 @@ exports.getProviderReservations = async (req, res) => {
   }
 };
 
-
-// Update reservation status
-exports.updateReservationStatus = async (req, res) => {
-  try {
-    const { reservationId } = req.params;
-    const { status } = req.body; // APPROVED or REJECTED
-
-    if (!["APPROVED", "REJECTED" , "PENDING"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status value." });
-    }
-
-    const reservation = await ReservationService.findByIdAndUpdate(
-      reservationId,
-      { status },
-      { new: true }
-    );
-
-    if (!reservation) {
-      return res.status(404).json({ message: "Reservation not found." });
-    }
-
-    res.status(200).json({ message: `Reservation ${status}.`, reservation });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error updating reservation status." });
-  }
-};
-
-
 // Get reservations by clientId 
 exports.getReservationsByClient = async (req, res) => {
   try {
     const { clientId } = req.params;
 
-    // Directly filter reservations based on the Service's Client field
-    const reservations = await ReservationService.find()
+    const reservations = await ReservationService.find({ client: clientId })
       .populate({
         path: 'Service',
-        populate: { path: 'Client', select: 'firstName lastName email' }, // Populate Client details
+        select: 'title description price',
+        populate: { path: 'Client', select: 'firstName lastName email' }
       })
-      .populate('provider', 'firstName phoneNumber') // Populate provider details
-      .populate('Service', 'title description'); // Populate specific fields from Service
+      .populate('provider', 'firstName phoneNumber')
+      .populate('Service', 'title description');
 
-    // Filter reservations where the Service's Client matches the clientId
-    const filteredReservations = reservations.filter(
-      (reservation) => reservation.Service && reservation.Service.Client && reservation.Service.Client._id.toString() === clientId
-    );
-
-    if (filteredReservations.length === 0) {
+    if (!reservations || reservations.length === 0) {
       return res.status(404).json({ message: "No reservations found for this client." });
     }
 
-    return res.status(200).json({ reservations: filteredReservations });
+    return res.status(200).json({ reservations });
   } catch (error) {
     console.error("Error fetching reservations:", error);
     return res.status(500).json({ message: "Error fetching reservations.", error: error.message });
   }
 };
-/**
- * exports.getReservationsByClient = async (req, res) => {
-  try {
-    const { clientId } = req.params;
-
-    // Fetch reservations where the client ID matches in the nested Service.Client
-    const reservations = await ReservationService.find()
-      .populate({
-        path: 'Service',
-        match: { Client: clientId }, // Filter by Client ID in the populated Service
-        populate: { path: 'Client', select: 'firstName lastName email' }, // Populate Client details if needed
-      })
-      .populate('provider', 'firstName phoneNumber') // Populate provider details
-      .populate('Service', 'title description');// Populate specific fields from Service
-
-      // Filter out any reservations where the Service does not match the client ID
-    const filteredReservations = reservations.filter((reservation) => reservation.Service);
-
-    if (filteredReservations.length === 0) {
-      return res.status(404).json({ message: "No reservations found for this client." });
-    }
-
-    return res.status(200).json({ reservations: filteredReservations });
-  } catch (error) {
-    console.error("Error fetching reservations:", error);
-    return res.status(500).json({ message: "Error fetching reservations.", error: error.message });
-  }
-};
- */
-
 
 // Get a specific reservation by ID
 exports.getReservationById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Fetch reservation with populated references
     const reservation = await ReservationService.findById(id)
       .populate("Service", "name description price")
       .populate("provider", "name email");
@@ -198,19 +145,14 @@ exports.updateReservationStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    console.log("Status received:", status);
-    console.log("Full Request Body:", req.body); // Log the entire request body
-
-    // Validate the new status
     if (!['PENDING', 'APPROVED', 'REJECTED'].includes(status)) {
-      return res.status(400).json({ message: "Invalid status.", receivedStatus: status });
+      return res.status(400).json({ message: "Invalid status." });
     }
 
-    // Update reservation status
     const updatedReservation = await ReservationService.findByIdAndUpdate(
       id,
       { status },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (!updatedReservation) {
@@ -224,13 +166,11 @@ exports.updateReservationStatus = async (req, res) => {
   }
 };
 
-
 // Delete a reservation
 exports.deleteReservation = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Delete reservation by ID
     const deletedReservation = await ReservationService.findByIdAndDelete(id);
 
     if (!deletedReservation) {

@@ -1,24 +1,28 @@
 const mongoose = require("mongoose");
 
-// Schéma de réservation
 const ReservationServiceSchema = new mongoose.Schema({
-    Service: { // Correction du champ pour correspondre à la logique
+  Service: { 
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Service', // Le modèle pour les utilisateurs
+    ref: 'Service', 
     required: true,
   },
-  provider: { // Correction du champ pour correspondre à la logique
+  provider: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'prest', // Le modèle pour les prestataires
+    ref: 'prest', 
+    required: true,
+  },
+  client: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', 
     required: true,
   },
   status: {
     type: String,
     enum: ['PENDING', 'APPROVED', 'REJECTED'],
-    default: 'PENDING', // Default status is PENDING
+    default: 'PENDING',
   },
 }, {
-  timestamps: true, // Ajout des champs createdAt et updatedAt automatiquement
+  timestamps: true, 
 });
 
 module.exports = mongoose.model("ReservationService", ReservationServiceSchema);
