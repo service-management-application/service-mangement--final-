@@ -13,7 +13,7 @@ const Join = () => {
               <Card.Title className="text-dark mb-3" style={{ fontSize: "1.5rem", fontWeight: "600" }}>
                 I'm a client, looking for a service
               </Card.Title>
-              <Link to="/Registerclient" className="text-decoration-none w-100">
+              <Link to="/loginclient" className="text-decoration-none w-100">
                 <Button variant="outline-dark" className="w-100 d-flex justify-content-between align-items-center" style={{marginTop: "30px"}}>
                   Join as Client
                   <i className="fas fa-arrow-right"></i>
@@ -28,7 +28,7 @@ const Join = () => {
               <Card.Title className="text-dark mb-3" style={{ fontSize: "1.5rem", fontWeight: "600" }}>
                 I'm a service provider, looking for work
               </Card.Title>
-              <Link to="/RegisterProvider" className="text-decoration-none w-100">
+              <Link to="/loginProvider" className="text-decoration-none w-100">
                 <Button variant="outline-dark" className="w-100 d-flex justify-content-between align-items-center">
                   Join as Provider
                   <i className="fas fa-arrow-right"></i>

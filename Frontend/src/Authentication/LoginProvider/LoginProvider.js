@@ -47,7 +47,7 @@ const LoginProvider = () => {
             <div className="row gx-lg-5 align-items-center">
               <div className="col-lg-6 mb-5">
                 <h1 className="my-5 display-3 fw-bold ls-tight">
-                  LOG <span className="text-primary">IN</span>
+                  LOG IN<br/><span className="text-primary">AS PROVIDER</span>
                 </h1>
               </div>
               <div className="col-lg-6 mb-5">
