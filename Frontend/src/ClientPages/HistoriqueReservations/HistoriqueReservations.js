@@ -9,8 +9,8 @@ const HistoriqueReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [cancelSuccess, setCancelSuccess] = useState(null); // For handling cancel success
-  const [cancelError, setCancelError] = useState(null); // For handling cancel error
+  const [cancelSuccess, setCancelSuccess] = useState(null);
+  const [cancelError, setCancelError] = useState(null);
 
   const clientData = JSON.parse(localStorage.getItem('clientData'));
   const clientId = clientData ? clientData.id : null;
@@ -40,23 +40,20 @@ const HistoriqueReservations = () => {
 
   const deleteReservation = async (reservationId) => {
     try {
-      // Retrieve the clientId from localStorage
       const clientData = JSON.parse(localStorage.getItem('clientData'));
       const clientId = clientData ? clientData.id : null;
-      const providerId = "your_provider_id_here"; // Replace with the actual provider ID (could be passed as prop or fetched)
-  
+      const providerId = "your_provider_id_here"; // Replace with actual provider ID
+
       if (!clientId) {
         setCancelError("Client not logged in or no client data found.");
         return;
       }
-  
-      // Sending clientId and providerId as query params
+
       const response = await axios.delete(`http://localhost:4000/reservations/delete/${reservationId}`, {
-        params: { clientId, providerId }, // Sending clientId and providerId in the query params
+        params: { clientId, providerId },
       });
-  
-      // On successful cancellation, remove the reservation from the UI
-      setReservations(reservations.filter(reservation => reservation._id !== reservationId)); // Remove the canceled reservation from the list
+
+      setReservations(reservations.filter(reservation => reservation._id !== reservationId)); 
       setCancelSuccess("Reservation canceled successfully.");
       setCancelError(null);
     } catch (err) {
@@ -65,8 +62,6 @@ const HistoriqueReservations = () => {
       setCancelSuccess(null);
     }
   };
-  
-  
 
   if (loading) {
     return <div className="alert alert-info text-center mt-5">Loading...</div>;
@@ -100,7 +95,7 @@ const HistoriqueReservations = () => {
               <th>Activity Details</th>
               <th>Status</th>
               <th>Created At</th>
-              <th>Actions</th> {/* Add actions column */}
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -123,7 +118,7 @@ const HistoriqueReservations = () => {
                 </td>
                 <td>{new Date(reservation.createdAt).toLocaleDateString()}</td>
                 <td>
-                  {reservation.status.toLowerCase() !== 'cancelled' && (
+                  {reservation.status.toLowerCase() === 'pending' && (
                     <button
                       className="btn btn-danger btn-sm"
                       onClick={() => deleteReservation(reservation._id)}
@@ -151,3 +146,5 @@ const HistoriqueReservations = () => {
 };
 
 export default HistoriqueReservations;
+
+
