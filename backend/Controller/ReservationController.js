@@ -4,31 +4,38 @@ const Client = require("../model/Client");
 
 
 // Create a new reservation
+//
 exports.createReservation = async (req, res) => {
-  console.log('Request Body:', req.body); // Debug log
+    console.log('Request Body:', req.body); // Debug log
   
-  try {
-    const { client, provider } = req.body;
-
-    // Vérification des champs requis
-    if (!client || !provider ) {
-      return res.status(400).json({ message: 'Missing required fields.' });
+    try {
+      const { client, provider } = req.body;
+  
+      // Vérification des champs requis
+      if (!client || !provider) {
+        return res.status(400).json({ message: 'Missing required fields.' });
+      }
+  
+      // Check if a reservation already exists for this client and provider
+      const existingReservation = await Reservation.findOne({ client, provider });
+      if (existingReservation) {
+        return res.status(400).json({ message: 'Reservation already exists for this client and provider.' });
+      }
+  
+      // Création de la réservation
+      const newReservation = new Reservation({
+        client,
+        provider,
+      });
+  
+      await newReservation.save();
+  
+      return res.status(201).json({ message: 'Reservation created successfully.', reservation: newReservation });
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+      return res.status(500).json({ message: 'Failed to create reservation.', error: error.message });
     }
-
-    // Création de la réservation
-    const newReservation = new Reservation({
-      client,
-      provider,
-    });
-
-    await newReservation.save();
-
-    return res.status(201).json({ message: 'Reservation created successfully.', reservation: newReservation });
-  } catch (error) {
-    console.error('Error creating reservation:', error);
-    return res.status(500).json({ message: 'Failed to create reservation.', error: error.message });
-  }
-};
+  };
 
 
 

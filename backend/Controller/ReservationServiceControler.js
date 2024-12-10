@@ -52,6 +52,27 @@ exports.createReservation = async (req, res) => {
   }
 };
 
+// Check if a reservation already exists for a service and provider
+// Check if a service is reserved
+exports.checkReservation = async (req, res) => {
+  const { serviceId } = req.params;
+
+  try {
+    const reservation = await ReservationService.findOne({ Service: serviceId });
+
+    if (reservation) {
+      return res.status(200).json({ isReserved: true });
+    }
+
+    return res.status(200).json({ isReserved: false });
+  } catch (error) {
+    console.error("Error checking reservation status:", error);
+    return res.status(500).json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+
+
 // Get all reservations
 exports.getReservations = async (req, res) => {
   try {

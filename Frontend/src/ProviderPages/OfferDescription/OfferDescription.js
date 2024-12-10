@@ -12,6 +12,7 @@ export default function OfferDescription() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [reservationSuccess, setReservationSuccess] = useState(false);
   const [reservationError, setReservationError] = useState("");
+  const [isReserved, setIsReserved] = useState(false);
 
   useEffect(() => {
     const fetchService = async () => {
@@ -28,6 +29,15 @@ export default function OfferDescription() {
           `http://localhost:4000/services/get/${serviceId}`
         );
         setService(response.data);
+
+        // Check if the service is already reserved
+        const reservationCheck = await axios.get(
+          `http://localhost:4000/reservationservices/check-reservation/${serviceId}`
+        );
+
+        if (reservationCheck.data.isReserved) {
+          setIsReserved(true);
+        }
       } catch (err) {
         console.error("Error fetching service data:", err);
         setError("Failed to load service information.");
@@ -49,31 +59,27 @@ export default function OfferDescription() {
     const providerData = JSON.parse(localStorage.getItem("providerData"));
     const providerId = providerData ? providerData.id : null;
     const ServiceId = localStorage.getItem("selectedServiceId");
-    //const activityDetails = service? service.activity_description : null;
 
     if (!providerId) {
       setReservationError("Provider not logged in.");
       setIsProcessing(false);
       return;
     }
-/*
-    if (!activityDetails) {
-      setReservationError("Activity description is missing.");
-      setIsProcessing(false);
-      return;
-    }
-*/
+
     try {
       const reservationData = {
         Service: ServiceId,
         provider: providerId,
-    //    activityDetails,
       };
 
-      await axios.post("http://localhost:4000/reservationservices/create", reservationData);
+      await axios.post(
+        "http://localhost:4000/reservationservices/create",
+        reservationData
+      );
 
       setReservationSuccess(true);
       setReservationError("");
+      setIsReserved(true); // Mark the service as reserved
     } catch (err) {
       console.error("Error creating reservation:", err);
       setReservationError("Failed to reserve activity.");
@@ -137,12 +143,6 @@ export default function OfferDescription() {
                           <strong>Description: </strong> {service.description || "N/A"}
                         </li>
                       </ul>
-                      {/*just test---- 
-                      <p className="lead">
-                        {service.Client.activity_description || "No description client."}
-                      </p>
-                      {/*---- */}
-
                     </div>
                   </div>
 
@@ -156,13 +156,19 @@ export default function OfferDescription() {
 
                     <div style={{ margin: "0 10px" }}></div>
 
-                    {isLoggedIn && (
+                    {isLoggedIn && !isReserved && (
                       <button
                         className="btn btn-outline-dark flex-shrink-0"
                         onClick={handleReservation}
                         disabled={isProcessing}
                       >
                         {isProcessing ? "Processing..." : "Reserve"}
+                      </button>
+                    )}
+
+                    {isReserved && (
+                      <button className="btn btn-outline-dark flex-shrink-0" disabled>
+                        Already Reserved
                       </button>
                     )}
                   </div>
