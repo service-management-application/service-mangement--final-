@@ -7,26 +7,39 @@ import { toast } from "react-toastify";
 
 export default function ProfilProvider() {
   const [providerData, setProviderData] = useState(null);
+  const [providerDatacat, setProviderDatacat] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editableData, setEditableData] = useState({});
-  const [reservations, setReservations] = useState([]); // State to store reservations
+  const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
-    // Fetch provider data from local storage
     const storedData = localStorage.getItem("providerData");
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       setProviderData(parsedData);
-      setEditableData(parsedData); // Initialize editable data
-      fetchReservations(parsedData.id); // Fetch reservations for the provider
+      setEditableData(parsedData);
+      fetchReservations(parsedData.id);
+      fetchProviderCategory(parsedData.id);
     }
   }, []);
+
+  const fetchProviderCategory = async (providerId) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/providers/get/${providerId}`);
+      if (response.status === 200) {
+        setProviderDatacat(response.data); // Assuming the API returns category data
+      }
+    } catch (error) {
+      console.error("Error fetching provider category:", error);
+      toast.error("Error fetching provider category. Please try again.");
+    }
+  };
 
   const fetchReservations = async (providerId) => {
     try {
       const response = await axios.get(`http://localhost:4000/reservations/provider/${providerId}`);
       if (response.status === 200) {
-        setReservations(response.data.reservations); // Update state with fetched reservations
+        setReservations(response.data.reservations || []); // Ensure reservations is always an array
       }
     } catch (error) {
       console.error("Error fetching reservations:", error);
@@ -36,15 +49,13 @@ export default function ProfilProvider() {
 
   const handleAccept = async (reservationId) => {
     try {
-      const response = await axios.put(
-        `http://localhost:4000/reservations/accept/${reservationId}`,
-        { providerId: providerData.id } // Pass providerId in the body
-      );
+      const response = await axios.put(`http://localhost:4000/reservations/accept/${reservationId}`, {
+        providerId: providerData.id,
+      });
       if (response.status === 200) {
         toast.success("Reservation accepted!");
-        // Update the reservations locally
-        setReservations((prevReservations) =>
-          prevReservations.map((reservation) =>
+        setReservations((prev) =>
+          prev.map((reservation) =>
             reservation._id === reservationId
               ? { ...reservation, status: "APPROVED" }
               : reservation
@@ -56,16 +67,16 @@ export default function ProfilProvider() {
       toast.error("Error accepting reservation. Please try again.");
     }
   };
+
   const handleReject = async (reservationId) => {
     try {
-      const response = await axios.put(
-        `http://localhost:4000/reservations/reject/${reservationId}`,
-        { providerId: providerData.id }
-      );
+      const response = await axios.put(`http://localhost:4000/reservations/reject/${reservationId}`, {
+        providerId: providerData.id,
+      });
       if (response.status === 200) {
         toast.success("Reservation rejected!");
-        setReservations((prevReservations) =>
-          prevReservations.map((reservation) =>
+        setReservations((prev) =>
+          prev.map((reservation) =>
             reservation._id === reservationId
               ? { ...reservation, status: "REJECTED" }
               : reservation
@@ -77,9 +88,6 @@ export default function ProfilProvider() {
       toast.error("Error rejecting reservation. Please try again.");
     }
   };
-    
-
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -106,7 +114,7 @@ export default function ProfilProvider() {
   };
 
   if (!providerData) {
-    return <div>Loading...</div>; // Handle loading or empty state
+    return <div>Loading...</div>;
   }
 
   return (
@@ -139,6 +147,16 @@ export default function ProfilProvider() {
                     className="rounded-circle mb-3"
                     style={{ width: "150px" }}
                   />
+                  <h5 className="mt-2">
+                    {providerData.firstName} {providerData.lastName}
+                  </h5>
+                  <p className="text-muted">{providerDatacat?.category?.title || "No Category"}</p>
+
+                  <Link to="/Provider/ProvHistoriqueReservations">
+                    <button className="btn btn-secondary">
+                      View Historic Reservation
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -171,7 +189,6 @@ export default function ProfilProvider() {
                       </div>
                     )
                   )}
-
                   <div className="d-flex justify-content-end mt-3">
                     {isEditing ? (
                       <button className="btn btn-success" onClick={handleSaveChanges}>
@@ -200,21 +217,19 @@ export default function ProfilProvider() {
                       <th>Address</th>
                       <th>Phone</th>
                       <th>Email</th>
-                      <th>Service Description</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {reservations.length > 0 ? (
+                    {reservations && reservations.length > 0 ? (
                       reservations.map((reservation) => (
                         <tr key={reservation._id}>
-                          <td>{reservation.client.firstName}</td>
-                          <td>{reservation.client.address}</td>
-                          <td>{reservation.client.phone}</td>
-                          <td>{reservation.client.email}</td>
+                          <td>{reservation.client ? reservation.client.firstName : "Unknown"}</td>
+                          <td>{reservation.client ? reservation.client.address : "Unknown"}</td>
+                          <td>{reservation.client ? reservation.client.phone : "Unknown"}</td>
+                          <td>{reservation.client ? reservation.client.email : "Unknown"}</td>
                           <td>{reservation.status}</td>
-                          <td>{reservation.activityDetails}</td>
                           <td>
                             <button className="btn btn-sm btn-success" onClick={() => handleAccept(reservation._id)}>
                               Accept
@@ -230,7 +245,7 @@ export default function ProfilProvider() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6">No client requests found.</td>
+                        <td colSpan="6">No requests yet</td>
                       </tr>
                     )}
                   </tbody>

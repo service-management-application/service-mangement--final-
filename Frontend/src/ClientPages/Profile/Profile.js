@@ -15,6 +15,11 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [showJobForm, setShowJobForm] = useState(false);
+  //
+  const [reservations, setReservations] = useState([]);
+  const [showReservations, setShowReservations] = useState(false);
+ // 
+
   const [jobRequest, setJobRequest] = useState({
     title: "",
     date: "",
@@ -49,6 +54,35 @@ export default function ProfilePage() {
     fetchData();
   }, []);
 
+  //
+  const fetchReservations = async () => {
+    try {
+      const clientData = JSON.parse(localStorage.getItem("clientData"));
+      if (!clientData || !clientData.id) {
+        toast.error("Client information is missing. Please log in again.");
+        return;
+      }
+  
+      console.log("Client Data:", clientData);
+  
+      const response = await axios.get(
+        `http://localhost:4000/reservationservices/reservations/client/${clientData.id}`
+      );
+  
+      if (response.status === 200) {
+        console.log("Reservations fetched:", response.data.reservations);
+        setReservations(response.data.reservations || []); // Handle case where reservations might be missing
+        setShowReservations(true);
+      }
+      
+    } catch (err) {
+      console.error("Error fetching reservations:", err.response || err.message);
+      toast.error("Failed to load reservations. Please try again.");
+    }
+  };
+  
+  
+  //
   const handleSaveChanges = async () => {
     if (
       newAddress.trim() ||
@@ -141,9 +175,6 @@ export default function ProfilePage() {
 
 
 
-
-
-
   const handleDelete = async (jobId) => {
     try {
       const response = await axios.delete(
@@ -159,7 +190,40 @@ export default function ProfilePage() {
       toast.error("Failed to delete the job. Please try again.");
     }
   };
+//reservation action
+const handleAccept = async (reservationId) => {
+  try {
+    const response = await axios.patch(
+      `http://localhost:4000/reservationservices/reservations/${reservationId}/status`,
+      { status: "APPROVED" }
+    );
+    if (response.status === 200) {
+      toast.success("Reservation approved!");
+      fetchReservations(); // Refresh the reservations list
+    }
+  } catch (error) {
+    console.error("Error approving reservation:", error.response || error.message);
+    toast.error("Failed to approve reservation. Please try again.");
+  }
+};
 
+const handleReject = async (reservationId) => {
+  try {
+    const response = await axios.patch(
+      `http://localhost:4000/reservationservices/reservations/${reservationId}/status`,
+      { status: "REJECTED" }
+    );
+    if (response.status === 200) {
+      toast.success("Reservation rejected!");
+      fetchReservations(); // Refresh the reservations list
+    }
+  } catch (error) {
+    console.error("Error rejecting reservation:", error.response || error.message);
+    toast.error("Failed to reject reservation. Please try again.");
+  }
+};
+
+////History
   const toggleHistory = async () => {
     if (!showHistory) {
       try {
@@ -469,6 +533,75 @@ export default function ProfilePage() {
               </div>
             </div>
           )}
+
+ {/* Request service from the provider */}
+
+        
+<div className="d-flex justify-content-center mt-3">
+  <button
+    className="btn btn-secondary"
+    onClick={fetchReservations}
+  >
+    {showReservations ? "Hide Reservations" : "View Reservations"}
+  </button>
+</div>
+
+{showReservations && (
+  <div className="row mt-3">
+    <div className="col">
+      <div className="card">
+        <div className="card-body">
+          <h5>Your Reservations</h5>
+          {reservations.length > 0 ? (
+            <ul className="list-group">
+              {reservations.map((reservation) => (
+                <table className="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>provider</th>
+                    <th>date</th>
+                    <th>PhoneNumber</th>
+                    {/**  <th>Email</th>*/}
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+      
+                      <tr >
+                        <td>{reservation.provider?.firstName || "Provider Info Not Available"}</td>
+                        <td>{new Date(reservation.createdAt).toLocaleDateString()}</td>
+                        <td>{reservation.provider?.phoneNumber || "Provider phoneNumber Info Not Available"}</td>
+                       {/* <td>reservation</td>*/}
+                        <td>{reservation.status}</td>
+                        <td>
+                          <button className="btn btn-sm btn-success" onClick={() => handleAccept(reservation._id)}>
+                            Accept
+                          </button>
+                          <button className="btn btn-sm btn-danger" onClick={() => handleReject(reservation._id)}>
+                            Decline
+                          </button>
+                          <Link className="btn btn-sm btn-secondary" to="/provider/Providermessanger">
+                            Contact
+                          </Link>
+                        </td>
+                      </tr>
+                  
+                </tbody>
+              </table>
+              ))}
+            </ul>
+          ) : (
+            <p>No reservations found.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{/** */}
+
         </div>
       </section>
       <Footer />

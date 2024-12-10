@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
-const HistoriqueReservations = () => {
+const ProvHistoriqueReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch client data from localStorage
-  const clientData = JSON.parse(localStorage.getItem('clientData'));
-  const clientId = clientData ? clientData.id : null;
+  // Fetch provider data from localStorage
+  const providerData = JSON.parse(localStorage.getItem('providerData'));
+  const providerId = providerData ? providerData.id : null;
 
   // Use the navigate function to handle the redirection
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If no client ID is found, show an error message
-    if (!clientId) {
-      setError("Client not logged in or no client data found.");
+    // If no provider ID is found, show an error message
+    if (!providerId) {
+      setError("Provider not logged in or no provider data found.");
       setLoading(false);
       return;
     }
 
-    // Fetch reservations for the client from the backend
+    // Fetch reservations for the provider from the backend
     const fetchReservations = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/reservations/client/${clientId}`);
+        const response = await axios.get(`http://localhost:4000/reservationservices/provider/${providerId}`);
         setReservations(response.data.reservations);
         setLoading(false);
       } catch (err) {
@@ -36,7 +36,7 @@ const HistoriqueReservations = () => {
     };
 
     fetchReservations();
-  }, [clientId]);
+  }, [providerId]);
 
   // If loading, display a loading message
   if (loading) {
@@ -60,28 +60,31 @@ const HistoriqueReservations = () => {
       <table className="table table-striped">
         <thead>
           <tr>
-            <th>Provider</th>
-           {/** <th>Activity Details</th> */}
+            <th>Client</th>
             <th>Status</th>
             <th>Created At</th>
           </tr>
         </thead>
         <tbody>
-          {reservations.map((reservation) => (
+        {reservations.map((reservation) => (
             <tr key={reservation._id}>
-              <td>{reservation.provider.firstName} {reservation.provider.lastName}</td>
-              {/** <td>{reservation.activityDetails}</td> */}
-              <td>{reservation.status}</td>
-              <td>{new Date(reservation.createdAt).toLocaleDateString()}</td>
+            <td>
+                {reservation.Service && reservation.Service.Client && reservation.Service.Client.firstName && reservation.Service.Client.lastName
+                ? `${reservation.Service.Client.firstName} ${reservation.Service.Client.lastName}`
+                : 'Client details not available'}
+            </td>
+            <td>{reservation.status}</td>
+            <td>{new Date(reservation.createdAt).toLocaleDateString()}</td>
             </tr>
-          ))}
+        ))}
         </tbody>
+
       </table>
       
       {/* Button to navigate back to Client/Profile */}
       <button 
         className="btn btn-primary mt-4" 
-        onClick={() => navigate('/client/profile')}
+        onClick={() => navigate('/Provider/ProfilProvider')}
       >
         Back to Profile
       </button>
@@ -89,4 +92,4 @@ const HistoriqueReservations = () => {
   );
 };
 
-export default HistoriqueReservations;
+export default ProvHistoriqueReservations;

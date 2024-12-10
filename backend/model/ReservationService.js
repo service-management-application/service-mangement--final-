@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 // Schéma de réservation
-const ReservationSchema = new mongoose.Schema({
-  client: { // Correction du champ pour correspondre à la logique
+const ReservationServiceSchema = new mongoose.Schema({
+    Service: { // Correction du champ pour correspondre à la logique
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users', // Le modèle pour les utilisateurs
+    ref: 'Service', // Le modèle pour les utilisateurs
     required: true,
   },
   provider: { // Correction du champ pour correspondre à la logique
@@ -12,10 +12,6 @@ const ReservationSchema = new mongoose.Schema({
     ref: 'prest', // Le modèle pour les prestataires
     required: true,
   },
- /* activityDetails: {
-    type: String,
-    required: true,
-  },*/
   status: {
     type: String,
     enum: ['PENDING', 'APPROVED', 'REJECTED'],
@@ -25,4 +21,4 @@ const ReservationSchema = new mongoose.Schema({
   timestamps: true, // Ajout des champs createdAt et updatedAt automatiquement
 });
 
-module.exports = mongoose.model("Reservation", ReservationSchema);
+module.exports = mongoose.model("ReservationService", ReservationServiceSchema);

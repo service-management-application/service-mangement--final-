@@ -37,6 +37,7 @@ const ProviderCategories = lazy(() => import("./ProviderPages/ProviderCategories
 const ProviderMessanger = lazy(() => import("./ProviderPages/ProviderMessanger/ProviderMessanger.js"));
 
 const ProfilProvider = lazy(() => import("./ProviderPages/ProfilProvider/ProfilProvider.js"));
+const ProvHistoriqueReservations = lazy(() => import("./ProviderPages/ProvHistoriqueReservations/ProvHistoriqueReservations.js"));
 
 
 export default function Router() {
@@ -88,6 +89,8 @@ export default function Router() {
           <Route path="Provider/ProviderMessanger" element={<ProviderMessanger />} />
           <Route path="Provider/ProfilProvider" element={<ProfilProvider />} />
           <Route path="Provider/aboutus" element={<Aboutus />} />
+          <Route path="Provider/ProvHistoriqueReservations" element={<ProvHistoriqueReservations />} />
+
 
 
         </Routes>
