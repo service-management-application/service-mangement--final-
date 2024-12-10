@@ -46,30 +46,30 @@ export default function OfferDescription() {
   const handleReservation = async () => {
     if (isProcessing) return; // Prevent duplicate submissions
     setIsProcessing(true);
-  
+
     const clientData = JSON.parse(localStorage.getItem("clientData"));
     const clientId = clientData ? clientData.id : null;
     const providerId = localStorage.getItem("selectedProviderId");
-  
+
     if (!clientId) {
       setReservationError("Client not logged in.");
       setIsProcessing(false);
       return;
     }
-  
+
     try {
       const reservationData = {
         client: clientId,
         provider: providerId,
       };
-  
+
       // Make the API request to create the reservation
       const response = await axios.post("http://localhost:4000/reservations/create", reservationData);
-  
+
       // If reservation is created successfully
       setReservationSuccess(true);
       setReservationError(""); // Clear error
-  
+
       // Change button text
       setIsProcessing(false); // Stop processing (enable button again)
     } catch (err) {
@@ -113,6 +113,9 @@ export default function OfferDescription() {
                   <li>Price: <span>{provider.price}</span> $/HR</li>
                   <li>Phone number: <span>{provider.phoneNumber}</span></li>
                   <li>Location: <span>{provider.state || "N/A"}</span></li>
+                  {provider.activity_description && (
+                    <li>Description: <span>{provider.activity_description}</span></li> // Added description field
+                  )}
                 </ul>
                 <div className="d-flex">
                   <Link

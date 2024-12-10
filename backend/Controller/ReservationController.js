@@ -214,3 +214,33 @@ exports.getReservationById = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+// Delete a reservation
+exports.deleteReservation = async (req, res) => {
+  const { reservationId } = req.params;
+  const { clientId, providerId } = req.query; // Get clientId and providerId from query params
+
+  try {
+    // Find the reservation by ID
+    const reservation = await Reservation.findById(reservationId);
+
+    if (!reservation) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
+
+    // Ensure that only the client who made the reservation or the provider can delete it
+    if (reservation.client.toString() !== clientId && reservation.provider.toString() !== providerId) {
+      return res.status(403).json({ message: 'You are not authorized to delete this reservation' });
+    }
+
+    // Use deleteOne() instead of remove()
+    await Reservation.deleteOne({ _id: reservationId });
+
+    return res.status(200).json({ message: 'Reservation deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting reservation:', error);
+    return res.status(500).json({
+      message: 'Failed to delete reservation',
+      error: error.message,
+    });
+  }
+};
