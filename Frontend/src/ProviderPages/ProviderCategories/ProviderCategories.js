@@ -5,121 +5,151 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Categories() {
-  const [categories, setCategories] = useState([]); // State to store the categories (or services)
-  const [loading, setLoading] = useState(true); // State to handle loading state
-  const [searchQuery, setSearchQuery] = useState(""); // State for search input
-  const navigate = useNavigate(); // To navigate programmatically
+  const [services, setServices] = useState([]); // All job services
+  const [allCategories, setAllCategories] = useState([]); // All job categories
+  const [filteredServices, setFilteredServices] = useState([]); // Filtered services
+  const [loading, setLoading] = useState(true); // Loading state
 
-  // Fetch categories (or services) from the backend
+  const [searchQuery] = useState(""); // Search query
+  const [selectedCategory, setSelectedCategory] = useState("All"); // Selected category
+  const [priceRange, setPriceRange] = useState(5000); // Price range
+  const navigate = useNavigate();
+
+  // Fetch services and categories on component mount
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4000/services/getall"
-        ); // Replace with the correct API endpoint
-        setCategories(response.data); // Set the fetched categories (or services) to state
-        setLoading(false); // Set loading to false after data is fetched
+        // Fetch all services
+        const servicesResponse = await axios.get("http://localhost:4000/services/getall");
+        setServices(servicesResponse.data);
+        setFilteredServices(servicesResponse.data); // Initial filtered state
+
+        // Fetch all categories
+        const categoriesResponse = await axios.get("http://localhost:4000/categories/getall");
+        setAllCategories(categoriesResponse.data);
+
+        setLoading(false);
       } catch (err) {
-        console.error("Error fetching categories:", err);
+        console.error("Error fetching data:", err);
         setLoading(false);
       }
     };
 
-    fetchCategories(); // Call fetchCategories when the component mounts
+    fetchData();
   }, []);
 
-  // Filter categories based on search query
-  const filteredCategories = categories.filter((service) =>
-    service.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Apply filters dynamically
+  useEffect(() => {
+    const filtered = services.filter((service) => {
+      // Category filter: Match the selected category with service's category name
+      const matchesCategory =
+        selectedCategory === "All" || service.title.toLowerCase() === selectedCategory.toLowerCase();
 
-  // Handle the click on "View Job Details"
+      const matchesSearchQuery =
+        service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        service.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesPrice = service.price <= priceRange;
+
+      return matchesCategory && matchesSearchQuery && matchesPrice;
+    });
+
+    setFilteredServices(filtered);
+  }, [searchQuery, selectedCategory, priceRange, services]);
+
+  // Handle navigation
   const handleViewProfile = (serviceId) => {
-    localStorage.setItem("selectedServiceId", serviceId); // Store service ID in localStorage
-    navigate(`/Provider/OfferDescription`); // Navigate to OfferDescription page
+    localStorage.setItem("selectedServiceId", serviceId);
+    navigate(`/Provider/OfferDescription`);
   };
 
   return (
-    <div>
+    <div className="d-flex flex-column min-vh-100">
+      {/* Navbar */}
       <Navbar />
 
-      <h1 className="text-center my-5">Job Requests</h1>
+      {/* Main Content */}
+      <div className="container mt-5 flex-grow-1">
+        <h1 className="text-center mb-4">Job Requests</h1>
 
-      {/* Search Bar */}
-      <div className="text-center mb-5">
-        <form
-          className="d-flex justify-content-center"
-          onSubmit={(e) => e.preventDefault()} // Prevent form submission
-          role="search"
-        >
-          <input
-            className="form-control me-2"
-            type="search"
-            placeholder="Search jobs by title"
-            aria-label="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
-            style={{ width: "250px", borderRadius: "20px" }}
-          />
-          <button
-            className="btn btn-success"
-            type="submit"
-            style={{ borderRadius: "20px" }}
-          >
-            Search
-          </button>
-        </form>
-      </div>
+        <div className="row">
+          {/* Filter Bar */}
+          <div className="col-md-3">
+            <div className="filter-bar border p-4 rounded">
+              <h4 className="text-center mb-4">Filters</h4>
 
-      <br />
-
-      {/* Job Cards */}
-      <div className="container text-center">
-        <div className="row justify-content-center">
-          {loading ? (
-            <p>Loading jobs...</p> // Show loading text while fetching
-          ) : filteredCategories.length > 0 ? (
-            filteredCategories.map((service) => (
-              <div
-                key={service._id}
-                className="col-12 col-md-6 col-lg-4 mb-4 d-flex justify-content-center"
-              >
-                <div className="card" style={{ width: "18rem" }}>
-                  <div className="card-body">
-                    <h5 className="card-title">{service.title}</h5>{" "}
-                    {/* Job title */}
-                    <p className="card-text">
-                      Posted by: {service.Client.firstName}{" "}
-                      {service.Client.lastName}
-                    </p>
-                    <p className="card-text">
-                      Price offered: {service.price} $
-                    </p>
-                    <p className="card-text">
-                      Needed Before:{" "}
-                      {new Date(service.date).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })}
-                    </p>
-                    {/*  <p className="card-text">{service.description}</p> {/* Job description  */}
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => handleViewProfile(service._id)} // Use service._id here
-                    >
-                      View Job Details {/* Button to navigate */}
-                    </button>
-                  </div>
-                </div>
+              {/* Category Dropdown */}
+              <div className="mb-4">
+                <label className="form-label">Category</label>
+                <select
+                  className="form-select"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <option value="All">All Categories</option>
+                  {allCategories.map((category) => (
+                    <option key={category._id} value={category.name}>
+                      {category.title}
+                    </option>
+                  ))}
+                </select>
               </div>
-            ))
-          ) : (
-            <p>No jobs found for "{searchQuery}".</p> // Show message if no jobs match search
-          )}
+
+              {/* Price Slider */}
+              <div className="mb-4">
+                <label className="form-label">Max Price: ${priceRange}</label>
+                <input
+                  type="range"
+                  className="form-range"
+                  min="0"
+                  max="5000"
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Job Listings */}
+          <div className="col-md-9">
+            {loading ? (
+              <p>Loading jobs...</p>
+            ) : filteredServices.length > 0 ? (
+              <div className="row">
+                {filteredServices.map((service) => (
+                  <div
+                    key={service._id}
+                    className="col-12 col-md-6 col-lg-4 mb-4 d-flex justify-content-center"
+                  >
+                    <div className="card shadow-sm" style={{ width: "18rem" }}>
+                      <div className="card-body">
+                        <h5 className="card-title">{service.title}</h5>
+                        <p className="card-text">
+                          Posted by: {service.Client?.firstName} {service.Client?.lastName}
+                        </p>
+                        <p className="card-text">Price: ${service.price}</p>
+                        <p className="card-text">
+                          Needed Before: {new Date(service.date).toLocaleDateString("en-GB")}
+                        </p>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => handleViewProfile(service._id)}
+                        >
+                          View Job Details
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No jobs found matching your filters.</p>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Footer */}
       <Footer />
     </div>
   );

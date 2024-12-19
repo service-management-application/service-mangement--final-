@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar/ProviderNavbar";
 import Footer from "../../Components/Footer/Footer";
+
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -126,9 +127,6 @@ export default function ProfilProvider() {
             <div className="col">
               <nav aria-label="breadcrumb">
                 <ol className="breadcrumb bg-light rounded-3 p-3">
-                  <li className="breadcrumb-item">
-                    <Link to="/client/ProfilesListInCat">Go Back</Link>
-                  </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     Provider Profile
                   </li>
