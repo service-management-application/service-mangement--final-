@@ -29,6 +29,7 @@ const LoginClient = () => {
         const { token, client } = response.data; // Changed from newClient to client
         localStorage.setItem("ClientToken", token); // Save token to localStorage
         localStorage.setItem("clientData", JSON.stringify(client)); // Save client data to localStorage
+        localStorage.setItem("usertype", "client"); // Save usertype as "client"
         toast.success("Login successful!");
         navigate("/"); // Redirect to the home page or dashboard
       }

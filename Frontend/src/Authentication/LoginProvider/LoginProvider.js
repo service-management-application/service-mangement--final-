@@ -23,6 +23,8 @@ const LoginProvider = () => {
 
         localStorage.setItem("providerToken", token); 
         localStorage.setItem("providerData", JSON.stringify(provider)); 
+        localStorage.setItem("usertype", "provider"); // Save usertype as "provider"
+
         toast.success("Login successful!");
         navigate("/provider/ProviderHome");
       }

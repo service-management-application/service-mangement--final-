@@ -18,7 +18,7 @@ export default function ProviderMessanger() {
       <ProviderNavbar />
       <div className="container mt-4">
         <Link
-          to="/provider/offerDescription"
+          to=""
           className="btn btn-secondary"
           style={{
             marginBottom: "10px", // Adds space between the link and the container below

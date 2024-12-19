@@ -1,5 +1,6 @@
 import React from "react";
-import about from "../../assets/images/about1.jpg"
+import about from "../../assets/images/about1.jpg";
+
 export default function About() {
   return (
     <div>
@@ -11,7 +12,7 @@ export default function About() {
                 class="img-fluid rounded"
                 loading="lazy"
                 src={about}
-                alt="About 1"
+                alt="About Us"
               />
             </div>
             <div class="col-12 col-lg-6 col-xl-7">
@@ -19,15 +20,13 @@ export default function About() {
                 <div class="col-12 col-xl-11">
                   <h2 class="mb-3">Who Are We?</h2>
                   <p class="lead fs-4 text-secondary mb-3">
-                    We help people to build incredible brands and superior
-                    products. Our perspective is to furnish outstanding
-                    captivating services.
+                    We simplify service management by connecting users with qualified 
+                    providers through an intuitive and reliable platform.
                   </p>
                   <p class="mb-5">
-                    We are a fast-growing company, but we have never lost sight
-                    of our core values. We believe in collaboration, innovation,
-                    and customer satisfaction. We are always looking for new
-                    ways to improve our products and services.
+                    As an innovative company, we are committed to delivering an 
+                    optimal user experience. Our solutions enable efficient management, 
+                    clear communication, and transparent tracking for all services offered.
                   </p>
                   <div class="row gy-4 gy-md-0 gx-xxl-5X">
                     <div class="col-12 col-md-6">
@@ -45,10 +44,10 @@ export default function About() {
                           </svg>
                         </div>
                         <div>
-                          <h2 class="h4 mb-3">Versatile Brand</h2>
+                          <h2 class="h4 mb-3">Versatile Solution</h2>
                           <p class="text-secondary mb-0">
-                            We are crafting a digital method that subsists life
-                            across all mediums.
+                            Our platform caters to the needs of both individuals and 
+                            businesses, simplifying service and request management.
                           </p>
                         </div>
                       </div>
@@ -68,10 +67,10 @@ export default function About() {
                           </svg>
                         </div>
                         <div>
-                          <h2 class="h4 mb-3">Digital Agency</h2>
+                          <h2 class="h4 mb-3">Digital Innovation</h2>
                           <p class="text-secondary mb-0">
-                            We believe in innovation by merging primary with
-                            elaborate ideas.
+                            We integrate the latest technologies to deliver a smooth 
+                            and innovative user experience.
                           </p>
                         </div>
                       </div>

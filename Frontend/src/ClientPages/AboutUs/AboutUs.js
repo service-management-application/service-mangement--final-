@@ -5,12 +5,11 @@ import ProviderNavbar from "../../Components/Navbar/ProviderNavbar";
 import Footer from "../../Components/Footer/Footer";
 
 export default function AboutUs() {
-  // Determine the user type based on localStorage
-  const userType = localStorage.getItem("userType"); // 'client' or 'provider'
+  const usertype = localStorage.getItem("usertype"); 
 
   return (
     <div>
-      {userType === "provider" ? <ProviderNavbar /> : <ClientNavbar />}
+      {usertype === "client" ? <ClientNavbar /> : <ProviderNavbar />}
       <About />
       <Footer />
     </div>
