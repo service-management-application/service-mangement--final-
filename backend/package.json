@@ -19,10 +19,8 @@
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.1",
     "nodemon": "^3.1.7",
+    "react-scripts": "^5.0.1",
     "react-toastify": "^10.0.6",
     "services": "file:"
   }
 }
-
-
-
