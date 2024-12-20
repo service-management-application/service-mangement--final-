@@ -23,7 +23,7 @@ export default function Register_Provider() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('https://service-mangement-final.onrender.com/categories/getall'); // Adjust the endpoint if necessary
+        const response = await axios.get('https://service-mangement-final-rxc3.onrender.com/categories/getall'); // Adjust the endpoint if necessary
         setCategories(response.data); // Set the categories in the state
       } catch (error) {
         console.error('Error fetching categories:', error);
@@ -43,7 +43,7 @@ export default function Register_Provider() {
     e.preventDefault();
     setLoading(true); // Set loading to true to show loading state
     try {
-      const response = await axios.post('https://service-mangement-final.onrender.com/providers/register', formData);
+      const response = await axios.post('https://service-mangement-final-rxc3.onrender.com/providers/register', formData);
       toast.success('Registration successful!');
       console.log('Server response:', response.data);
       // Optionally clear the form after success

@@ -26,7 +26,7 @@ const HistoriqueReservations = () => {
 
     const fetchReservations = async () => {
       try {
-        const response = await axios.get(`https://service-mangement-final.onrender.com/reservations/client/${clientId}`);
+        const response = await axios.get(`https://service-mangement-final-rxc3.onrender.com/reservations/client/${clientId}`);
         setReservations(response.data.reservations);
         setLoading(false);
       } catch (err) {
@@ -49,7 +49,7 @@ const HistoriqueReservations = () => {
         return;
       }
 
-      const response = await axios.delete(`https://service-mangement-final.onrender.com/reservations/delete/${reservationId}`, {
+      const response = await axios.delete(`https://service-mangement-final-rxc3.onrender.com/reservations/delete/${reservationId}`, {
         params: { clientId, providerId },
       });
 

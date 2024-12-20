@@ -27,7 +27,7 @@ const ProvHistoriqueReservations = () => {
     const fetchReservations = async () => {
       try {
         const response = await axios.get(
-          `https://service-mangement-final.onrender.com/reservationservices/provider/${providerId}`
+          `https://service-mangement-final-rxc3.onrender.com/reservationservices/provider/${providerId}`
         );
         setReservations(response.data.reservations || []);
         setLoading(false);
@@ -44,7 +44,7 @@ const ProvHistoriqueReservations = () => {
   const handleCancelReservation = async (reservationId) => {
     try {
       await axios.delete(
-        `https://service-mangement-final.onrender.com/reservationservices/${reservationId}`
+        `https://service-mangement-final-rxc3.onrender.com/reservationservices/${reservationId}`
       );
       setReservations((prevReservations) =>
         prevReservations.filter(

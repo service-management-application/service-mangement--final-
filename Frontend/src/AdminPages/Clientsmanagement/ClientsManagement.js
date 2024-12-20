@@ -17,7 +17,7 @@ export default function ClientsManagement() {
   const [loading, setLoading] = useState(true); // For loading state
   const [error, setError] = useState(null); // For error handling
 
-  const API_BASE_URL = "https://service-mangement-final.onrender.com/clients"; // Replace with actual API endpoint
+  const API_BASE_URL = "https://service-mangement-final-rxc3.onrender.com/clients"; // Replace with actual API endpoint
 
   // Fetch clients from backend
   useEffect(() => {

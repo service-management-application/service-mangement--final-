@@ -15,7 +15,7 @@ export default function CategoriesManagement() {
   const [loading, setLoading] = useState(true); // For loading state
   const [error, setError] = useState(null); // For error handling
 
-  const API_BASE_URL = "https://service-mangement-final.onrender.com/categories"; // No /categories here
+  const API_BASE_URL = "https://service-mangement-final-rxc3.onrender.com/categories"; // No /categories here
 
   // Fetch categories from backend
   useEffect(() => {
