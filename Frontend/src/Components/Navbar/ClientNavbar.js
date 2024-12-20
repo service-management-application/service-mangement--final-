@@ -23,7 +23,7 @@ const Navbar = () => {
     localStorage.removeItem("clientData");
     setIsLoggedIn(false);
     setClientName(""); // Clear client name
-    navigate("/LoginClient"); // Navigate to the homepage
+    navigate("/Join"); // Navigate to the homepage
   };
 
   return (
