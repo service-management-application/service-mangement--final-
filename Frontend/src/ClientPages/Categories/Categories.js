@@ -14,7 +14,7 @@ export default function Categories() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://service-mangement-final.onrender.com/categories/getall"); // Replace with your API endpoint
+        const response = await axios.get("https://service-mangement-final-rxc3.onrender.com/categories/getall"); // Replace with your API endpoint
         setCategories(response.data); // Set fetched categories to state
         setFilteredCategories(response.data); // Initially set filtered categories to all categories
         setLoading(false); // Set loading to false

@@ -26,7 +26,7 @@ export default function ProfilProvider() {
 
   const fetchProviderCategory = async (providerId) => {
     try {
-      const response = await axios.get(`https://service-mangement-final.onrender.com/providers/get/${providerId}`);
+      const response = await axios.get(`hhttps://service-mangement-final-rxc3.onrender.com/providers/get/${providerId}`);
       if (response.status === 200) {
         setProviderDatacat(response.data); // Assuming the API returns category data
       }
@@ -38,7 +38,7 @@ export default function ProfilProvider() {
 
   const fetchReservations = async (providerId) => {
     try {
-      const response = await axios.get(`https://service-mangement-final.onrender.com/reservations/provider/${providerId}`);
+      const response = await axios.get(`hhttps://service-mangement-final-rxc3.onrender.com/reservations/provider/${providerId}`);
       if (response.status === 200) {
         setReservations(response.data.reservations || []); // Ensure reservations is always an array
       }
@@ -50,7 +50,7 @@ export default function ProfilProvider() {
 
   const handleAccept = async (reservationId) => {
     try {
-      const response = await axios.put(`https://service-mangement-final.onrender.com/reservations/accept/${reservationId}`, {
+      const response = await axios.put(`hhttps://service-mangement-final-rxc3.onrender.com/reservations/accept/${reservationId}`, {
         providerId: providerData.id,
       });
       if (response.status === 200) {
@@ -71,7 +71,7 @@ export default function ProfilProvider() {
 
   const handleReject = async (reservationId) => {
     try {
-      const response = await axios.put(`https://service-mangement-final.onrender.com/reservations/reject/${reservationId}`, {
+      const response = await axios.put(`hhttps://service-mangement-final-rxc3.onrender.com/reservations/reject/${reservationId}`, {
         providerId: providerData.id,
       });
       if (response.status === 200) {
@@ -101,7 +101,7 @@ export default function ProfilProvider() {
 
     try {
       const response = await axios.put(
-        `https://service-mangement-final.onrender.com/providers/update/${editableData.id}`,
+        `hhttps://service-mangement-final-rxc3.onrender.com/providers/update/${editableData.id}`,
         editableData
       );
       if (response.status === 200) {

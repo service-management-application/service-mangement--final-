@@ -22,8 +22,8 @@ export default function ProvidersManagement() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const PROVIDERS_API_URL = "https://service-mangement-final.onrender.com/providers";
-  const CATEGORIES_API_URL = "https://service-mangement-final.onrender.com/categories";
+  const PROVIDERS_API_URL = "https://service-mangement-final-rxc3.onrender.com/providers";
+  const CATEGORIES_API_URL = "https://service-mangement-final-rxc3.onrender.com/categories";
 
   // Fetch providers and categories from the backend
   useEffect(() => {

@@ -13,7 +13,7 @@ const LoginProvider = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("https://service-mangement-final.onrender.com/providerS/login", {
+      const response = await axios.post("https://service-mangement-final-rxc3.onrender.com/providerS/login", {
         email,
         password,
       });
