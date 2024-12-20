@@ -15,14 +15,16 @@ const ReservationServiceRoutes = require("./routes/ReservationServiceRoute");
 
 const app = express();
 
-// CORS configuration
-const corsOptions = {
+// CORS configuratio
+/*const corsOptions = {
   origin: "https://service-mangement-final.onrender.com", // Allow requests from this origin
   credentials: true, // Allow cookies and credentials
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Allow specific HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allow Content-Type and Authorization headers
 };
-app.use(cors(corsOptions));
+app.use(cors(corsOptions));*/
+
+app.use(cors());
 
 // Middleware
 app.use(express.json()); // Parse JSON payloads
