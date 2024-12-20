@@ -26,7 +26,7 @@ export default function ProfilesListInCat() {
 
       try {
         const response = await axios.get(
-          `http://localhost:4000/providerS/providers/category/${categoryId}`
+          `https://service-mangement-final.onrender.com/providerS/providers/category/${categoryId}`
         );
         setProviders(response.data);
         setFilteredProviders(response.data); // Initialize filtered providers

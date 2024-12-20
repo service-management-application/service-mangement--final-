@@ -26,13 +26,13 @@ export default function OfferDescription() {
 
       try {
         const response = await axios.get(
-          `http://localhost:4000/services/get/${serviceId}`
+          `https://service-mangement-final.onrender.com/services/get/${serviceId}`
         );
         setService(response.data);
 
         // Check if the service is already reserved
         const reservationCheck = await axios.get(
-          `http://localhost:4000/reservationservices/check-reservation/${serviceId}`
+          `https://service-mangement-final.onrender.com/reservationservices/check-reservation/${serviceId}`
         );
 
         if (reservationCheck.data.isReserved) {
@@ -73,7 +73,7 @@ export default function OfferDescription() {
       };
 
       await axios.post(
-        "http://localhost:4000/reservationservices/create",
+        "https://service-mangement-final.onrender.com/reservationservices/create",
         reservationData
       );
 

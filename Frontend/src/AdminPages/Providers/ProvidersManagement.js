@@ -22,8 +22,8 @@ export default function ProvidersManagement() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const PROVIDERS_API_URL = "http://localhost:4000/providers";
-  const CATEGORIES_API_URL = "http://localhost:4000/categories";
+  const PROVIDERS_API_URL = "https://service-mangement-final.onrender.com/providers";
+  const CATEGORIES_API_URL = "https://service-mangement-final.onrender.com/categories";
 
   // Fetch providers and categories from the backend
   useEffect(() => {

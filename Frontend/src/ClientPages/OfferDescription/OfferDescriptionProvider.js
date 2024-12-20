@@ -25,7 +25,7 @@ export default function OfferDescription() {
 
       try {
         const response = await axios.get(
-          `http://localhost:4000/providers/get/${providerId}`
+          `https://service-mangement-final.onrender.com/providers/get/${providerId}`
         );
         setProvider(response.data);
       } catch (err) {
@@ -64,7 +64,7 @@ export default function OfferDescription() {
       };
 
       // Make the API request to create the reservation
-      const response = await axios.post("http://localhost:4000/reservations/create", reservationData);
+      const response = await axios.post("https://service-mangement-final.onrender.com/reservations/create", reservationData);
 
       // If reservation is created successfully
       setReservationSuccess(true);

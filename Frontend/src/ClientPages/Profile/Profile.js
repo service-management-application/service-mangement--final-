@@ -42,7 +42,7 @@ export default function ProfilePage() {
         const clientId = data?._id;
         if (clientId) {
           const response = await axios.get(
-            `http://localhost:4000/services/client/${clientId}`
+            `https://service-mangement-final.onrender.com/services/client/${clientId}`
           );
           setJobHistory(response.data || []);
         }
@@ -66,7 +66,7 @@ export default function ProfilePage() {
       console.log("Client Data:", clientData);
   
       const response = await axios.get(
-        `http://localhost:4000/reservationservices/reservations/client/${clientData.id}`
+        `https://service-mangement-final.onrender.com/reservationservices/reservations/client/${clientData.id}`
       );
   
       if (response.status === 200) {
@@ -107,7 +107,7 @@ export default function ProfilePage() {
 
       try {
         const response = await axios.put(
-          `http://localhost:4000/clients/update/${clientData.id}`,
+          `https://service-mangement-final.onrender.com/clients/update/${clientData.id}`,
           updatedData
         );
         if (response.status === 200) {
@@ -157,7 +157,7 @@ export default function ProfilePage() {
       };
 
       const response = await axios.post(
-        "http://localhost:4000/services/create",
+        "https://service-mangement-final.onrender.com/services/create",
         requestData
       );
 
@@ -178,7 +178,7 @@ export default function ProfilePage() {
   const handleDelete = async (jobId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:4000/services/delete/${jobId}`
+        `https://service-mangement-final.onrender.com/services/delete/${jobId}`
       );
       if (response.status === 200) {
         toast.success("Job deleted successfully!");
@@ -194,7 +194,7 @@ export default function ProfilePage() {
 const handleAccept = async (reservationId) => {
   try {
     const response = await axios.patch(
-      `http://localhost:4000/reservationservices/reservations/${reservationId}/status`,
+      `https://service-mangement-final.onrender.com/reservationservices/reservations/${reservationId}/status`,
       { status: "APPROVED" }
     );
     if (response.status === 200) {
@@ -210,7 +210,7 @@ const handleAccept = async (reservationId) => {
 const handleReject = async (reservationId) => {
   try {
     const response = await axios.patch(
-      `http://localhost:4000/reservationservices/reservations/${reservationId}/status`,
+      `https://service-mangement-final.onrender.com/reservationservices/reservations/${reservationId}/status`,
       { status: "REJECTED" }
     );
     if (response.status === 200) {
@@ -228,7 +228,7 @@ const handleReject = async (reservationId) => {
     if (!showHistory) {
       try {
         const response = await axios.get(
-          `http://localhost:4000/services/client/${clientData.id}`
+          `https://service-mangement-final.onrender.com/services/client/${clientData.id}`
         );
         if (response.status === 200) {
           setJobHistory(response.data || []);
