@@ -17,7 +17,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: "http://localhost:3000", // Allow requests from this origin
+  origin: "https://service-mangement-final.onrender.com", // Allow requests from this origin
   credentials: true, // Allow cookies and credentials
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Allow specific HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allow Content-Type and Authorization headers

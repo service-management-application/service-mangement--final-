@@ -20,7 +20,7 @@ const LoginAdmin = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:4000/admins/login", {
+      const response = await axios.post("https://service-mangement-final.onrender.com/admins/login", {
         email,
         password,
       });

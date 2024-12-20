@@ -36,7 +36,7 @@ export default function RegisterClient() {
     try {
       // Send POST request to backend
       const response = await axios.post(
-        'http://localhost:4000/clients/register',
+        'https://service-mangement-final.onrender.com/clients/register',
         formData,
         { withCredentials: true } // Include credentials
       );

@@ -20,12 +20,12 @@ export default function Categories() {
     const fetchData = async () => {
       try {
         // Fetch all services
-        const servicesResponse = await axios.get("http://localhost:4000/services/getall");
+        const servicesResponse = await axios.get("https://service-mangement-final.onrender.com/services/getall");
         setServices(servicesResponse.data);
         setFilteredServices(servicesResponse.data); // Initial filtered state
 
         // Fetch all categories
-        const categoriesResponse = await axios.get("http://localhost:4000/categories/getall");
+        const categoriesResponse = await axios.get("https://service-mangement-final.onrender.com/categories/getall");
         setAllCategories(categoriesResponse.data);
 
         setLoading(false);
