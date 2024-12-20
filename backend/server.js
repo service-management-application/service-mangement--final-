@@ -26,6 +26,7 @@ app.use(cors(corsOptions));*/
 
 app.use(cors());
 
+
 // Middleware
 app.use(express.json()); // Parse JSON payloads
 app.use(cookieParser()); // Parse cookies
